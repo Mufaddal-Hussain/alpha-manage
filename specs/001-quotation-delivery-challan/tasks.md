@@ -35,7 +35,7 @@ Each phase below is executed in its own dedicated session, named as shown. Sessi
 | `s8-polish-release` | 8 Polish | T078–T086 | quickstart passes, deployed to Vercel |
 | `s9-phone` | 9 Phone and home-screen app | T087–T094 | every screen usable at iPhone width, installable from Safari, checked in the iPhone simulator |
 
-`s9-phone` was added on 2026-11-21 at the owner's request (the app must work on iPhone and be saved to the home screen). It starts only after `s7-challan` (all screens exist by then) and never in parallel with another writing session. Recommended order is s7 → s9 → s8, so the first production deploy (T083) is already phone-ready; the owner confirms the order. T082 is replaced by Phase 9.
+`s9-phone` was added on 2026-11-21 at the owner's request (the app must work on iPhone and be saved to the home screen). It starts only after `s7-challan` (all screens exist by then) and never in parallel with another writing session. The owner confirmed on 2026-11-21 that the order is s7 → s9 → s8, so the first production deploy (T083) is already phone-ready. T082 is replaced by Phase 9.
 
 ## Path Conventions
 
