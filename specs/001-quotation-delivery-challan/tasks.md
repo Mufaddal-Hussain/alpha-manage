@@ -33,6 +33,9 @@ Each phase below is executed in its own dedicated session, named as shown. Sessi
 | `s6-purchase-order` | 6 US3 | T064–T069 | approved quotation → PO with attachment |
 | `s7-challan` | 7 US4 | T070–T077 | partial deliveries and challan PDF verified |
 | `s8-polish-release` | 8 Polish | T078–T086 | quickstart passes, deployed to Vercel |
+| `s9-phone` | 9 Phone and home-screen app | T087–T094 | every screen usable at iPhone width, installable from Safari, checked in the iPhone simulator |
+
+`s9-phone` was added on 2026-11-21 at the owner's request (the app must work on iPhone and be saved to the home screen). It starts only after `s7-challan` (all screens exist by then) and never in parallel with another writing session. Recommended order is s7 → s9 → s8, so the first production deploy (T083) is already phone-ready; the owner confirms the order. T082 is replaced by Phase 9.
 
 ## Path Conventions
 
@@ -252,11 +255,30 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 - [ ] T079 [P] Add an audit log view for owners in `src/app/(app)/settings/audit/page.tsx`
 - [ ] T080 Write the full-flow Playwright test `tests/e2e/full-flow.spec.ts` (customer → quotation → approve → PO → two challans) and run all suites
 - [ ] T081 [P] Security pass: confirm every server action and route handler calls `requireUser()`/`requireRole()`, file uploads enforce type and size limits (spec edge case), and signed-out requests to `/api/documents/...` and `/api/files/...` return 401 (quickstart scenario 10, SC-007)
-- [ ] T082 [P] Responsive and accessibility pass on the quotation editor, challan form and import review at phone width
+- [X] T082 [P] Superseded by Phase 9 (`s9-phone`, T087–T094): responsive and accessibility pass at phone width
 - [ ] T083 Configure Vercel: environment variables for Production and Preview, Neon database, Blob store, `npm run build` clean, then run the deploy smoke test from `quickstart.md` (the Vercel and GitHub link already exists from the main session)
 - [ ] T084 [P] Document database backup/restore and owner runbook in `docs/operations.md`, including how the same app is later run on Ubuntu (Node, Postgres, nginx)
 - [ ] T085 Run the whole `quickstart.md` validation and tick off the success criteria SC-001 to SC-008; record gaps as follow-up tasks
 - [ ] T086 Ratify the project constitution from the principles proposed in `plan.md` using `/speckit-constitution`
+
+---
+
+## Phase 9: Phone and home-screen app
+
+**Session**: `s9-phone`
+
+**Purpose**: Staff use the app from an iPhone and can save it to the home screen. Finding at planning time (2026-11-21): only 13 of about 40 `.tsx` files use responsive classes, nothing has been checked at phone width, and there is no web manifest, apple-touch-icon or iOS metadata (`public/` holds only the default Next.js svgs and `brand/`).
+
+**Checkpoint**: every screen works at 375–430 px wide with no horizontal page scroll, touch targets are at least 44 px, the app installs from Safari ("Add to Home Screen") and opens standalone with nothing under the notch or home bar, the iPhone-width Playwright spec passes, and screenshots from the iPhone simulator were sent to the owner.
+
+- [ ] T087 Audit first: add a Playwright project at iPhone width (390 × 844, plus 375 and 430 spot checks) in `playwright.config.ts` and a script that visits every route (sign-in, dashboard, customers, quotation list/editor/detail, catalog, price-list import review, PO, challan, settings) and records horizontal overflow and touch targets under 44 px; list the findings in the commit message or `docs/` before fixing
+- [ ] T088 Fix what the audit found: tables become stacked cards or sit in a scroll container with a visible hint, forms go single column, inputs use at least 16 px text (stops iOS zoom on focus), the sidebar becomes a drawer or bottom navigation on small screens, the quotation editor line items, the challan form and the import review work at phone width, buttons and links are at least 44 px
+- [ ] T089 [P] Add the viewport export in `src/app/layout.tsx` (`viewport-fit=cover`, `themeColor` for light and dark) and handle safe-area insets (`env(safe-area-inset-*)`) for the app header, navigation, sticky action bars and toasts
+- [ ] T090 [P] Add `src/app/manifest.ts` (name `alpha-Manage`, short name, `display: standalone`, `start_url: /`, background and theme colours) and icons in `public/` (192, 512, a maskable 512, and a 180 px apple-touch-icon), plus `appleWebApp` metadata (`capable`, title, status bar style); the icons come from the brand asset if the owner provides one, otherwise a simple placeholder mark
+- [ ] T091 [P] Make PDF links work on iPhone: the quotation and challan detail pages offer separate "View" and "Download" actions that open correctly in Safari and in standalone mode (never trap the user in a full-screen PDF with no way back)
+- [ ] T092 Write `tests/e2e/mobile.spec.ts` at iPhone width for the main flows (sign in, create customer, create and issue a quotation, open the PDF link, record a PO and a challan once those exist): no horizontal overflow, key controls visible and at least 44 px, navigation reachable
+- [ ] T093 Verify in the iPhone simulator (`mcp__Claude_Code_iOS_Simulator__control`): open the running app in Mobile Safari, walk the main flows, test "Add to Home Screen" as far as the simulator allows and check the standalone view and safe areas, then send the owner screenshots; record what the simulator cannot show (for example push, camera, real home-screen install on hardware)
+- [ ] T094 [P] Add a short "Install on iPhone" section to `README.md` (Share → Add to Home Screen, sign in once) and tick the phone checks in `quickstart.md`; note that `STORAGE_DRIVER` is a production setting handled under T083, not here
 
 ---
 
@@ -269,6 +291,7 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 - **US2 (5)** needs Foundational and the `product` table from US1 (T041); it can start once T041 exists and can run in parallel with US3/US4 work.
 - **US3 (6)** needs US1 (approved quotations). **US4 (7)** needs US3 (POs).
 - **Polish (8)** after the stories it covers.
+- **Phone (9)** after US4 (all screens exist); recommended before the production deploy (T083).
 
 ### Within a story
 

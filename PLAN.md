@@ -22,6 +22,7 @@ Steps 2, 3 and 5 above, plus the catalog and customer master they need.
 - Customer PO recorded against an approved quotation.
 - Delivery challans against a PO with partial deliveries and pending-quantity tracking; challan PDF in the existing Tally layout.
 - Staff-only login with roles (owner, sales).
+- Responsive on iPhone and installable to the home screen (added 2026-11-21).
 
 Details: [spec](specs/001-quotation-delivery-challan/spec.md), [technical plan](specs/001-quotation-delivery-challan/plan.md), [research](specs/001-quotation-delivery-challan/research.md), [data model](specs/001-quotation-delivery-challan/data-model.md), [contracts](specs/001-quotation-delivery-challan/contracts/), [quickstart](specs/001-quotation-delivery-challan/quickstart.md).
 
@@ -42,6 +43,7 @@ Next.js 16 (App Router) + TypeScript + Tailwind, PostgreSQL (Neon) with Drizzle,
 5. Purchase order.
 6. Delivery challan.
 7. Hardening and production deploy.
+8. Phone and home-screen app (added 2026-11-21): every screen works on an iPhone and the app can be saved to the home screen (manifest, icons, iOS metadata, safe areas, mobile tests). Runs after the challan phase and, recommended, before the production deploy.
 
 ## Open decisions for the owner
 
