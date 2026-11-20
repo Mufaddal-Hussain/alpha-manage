@@ -68,10 +68,10 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 
 ### Tests first (pure logic and numbering)
 
-- [ ] T008 [P] Write failing unit tests for exact money helpers in `tests/unit/money.test.ts`: decimal add/multiply, rounding to 2 dp, round-off to nearest rupee returning the signed round-off amount (case: 3,386.60 → +0.40)
-- [ ] T009 [P] Write failing unit tests for GST in `tests/unit/gst.test.ts`: intra-state split into CGST+SGST (half rate each), inter-state IGST, place-of-supply decision from state codes, the Radius 9 case (2,870.00 taxable at 18% → CGST 258.30, SGST 258.30; inter-state IGST 516.60)
-- [ ] T010 [P] Write failing unit tests for amount in words in `tests/unit/amount-in-words.test.ts`: Indian numbering (lakh, crore), paise, and the exact string "INR Three Thousand Three Hundred Eighty Seven Only" for 3,387.00
-- [ ] T011 [P] Write failing unit tests for financial-year helpers in `tests/unit/financial-year.test.ts`: April–March year label (for example 2026-27), boundaries on 31 March and 1 April
+- [X] T008 [P] Write failing unit tests for exact money helpers in `tests/unit/money.test.ts`: decimal add/multiply, rounding to 2 dp, round-off to nearest rupee returning the signed round-off amount (case: 3,386.60 → +0.40)
+- [X] T009 [P] Write failing unit tests for GST in `tests/unit/gst.test.ts`: intra-state split into CGST+SGST (half rate each), inter-state IGST, place-of-supply decision from state codes, the Radius 9 case (2,870.00 taxable at 18% → CGST 258.30, SGST 258.30; inter-state IGST 516.60)
+- [X] T010 [P] Write failing unit tests for amount in words in `tests/unit/amount-in-words.test.ts`: Indian numbering (lakh, crore), paise, and the exact string "INR Three Thousand Three Hundred Eighty Seven Only" for 3,387.00
+- [X] T011 [P] Write failing unit tests for financial-year helpers in `tests/unit/financial-year.test.ts`: April–March year label (for example 2026-27), boundaries on 31 March and 1 April
 - [ ] T012 [P] Write failing integration test for gap-free numbering in `tests/integration/numbering.test.ts`: 50 numbers requested concurrently from one series and year are unique and consecutive; a new financial year restarts at 1; a rolled-back transaction does not consume a number (needs a real Postgres)
 
 ### Core schema
@@ -81,10 +81,10 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 
 ### Pure logic
 
-- [ ] T015 [P] Implement `src/lib/money.ts` (decimal.js wrappers, rounding, round-off) until T008 passes
-- [ ] T016 [P] Add Indian state-code data in `src/lib/gst/state-codes.ts` (code, name, GSTIN prefix) and implement `src/lib/gst.ts` (tax mode, split, per-line tax) until T009 passes
-- [ ] T017 [P] Implement `src/lib/amount-in-words.ts` until T010 passes
-- [ ] T018 [P] Implement `src/lib/financial-year.ts` until T011 passes
+- [X] T015 [P] Implement `src/lib/money.ts` (decimal.js wrappers, rounding, round-off) until T008 passes
+- [X] T016 [P] Add Indian state-code data in `src/lib/gst/state-codes.ts` (code, name, GSTIN prefix) and implement `src/lib/gst.ts` (tax mode, split, per-line tax) until T009 passes
+- [X] T017 [P] Implement `src/lib/amount-in-words.ts` until T010 passes
+- [X] T018 [P] Implement `src/lib/financial-year.ts` until T011 passes
 - [ ] T019 Implement `src/lib/numbering.ts`: `nextNumber(tx, series, date)` using an upsert-and-return on `number_series` inside the caller's transaction, formatting from the series format (`QT/{FY}/{N}`) until T012 passes (depends on T013–T014, T018)
 
 ### Auth, access control and shell
