@@ -11,12 +11,12 @@ import { ConflictError, NotFoundError, runAction, ValidationError, type ActionRe
 import { financialYearOf } from "@/lib/financial-year";
 import { formValues, optionalText, parseForm } from "@/lib/form";
 import { getStateByCode } from "@/lib/gst/state-codes";
+import { GSTIN_PATTERN } from "@/lib/gstin";
 import { validateFormat } from "@/lib/numbering";
 import { deleteStoredFile, saveImageUpload } from "@/lib/storage/files";
 
 // Owner-only mutations for the settings screens (T029). Each action authorises first.
 
-const GSTIN = /^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
 const uuidOrEmpty = z
   .string()
   .trim()
@@ -34,7 +34,7 @@ const businessSchema = z
     stateCode: z.string().refine((v) => getStateByCode(v) !== undefined, "Choose a state"),
     gstin: optionalText(15)
       .transform((v) => v?.toUpperCase() ?? null)
-      .refine((v) => v === null || GSTIN.test(v), "GSTIN must be 15 characters in the standard format"),
+      .refine((v) => v === null || GSTIN_PATTERN.test(v), "GSTIN must be 15 characters in the standard format"),
     phone: optionalText(30),
     email: optionalText(120).refine((v) => v === null || z.email().safeParse(v).success, "Enter a valid email"),
     bankName: optionalText(80),

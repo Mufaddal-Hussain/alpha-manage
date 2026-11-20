@@ -48,9 +48,11 @@ export function TextInput({
   result?: ActionResult<unknown> | null;
 }) {
   const error = result && !result.ok ? result.fieldErrors?.[name] : undefined;
+  // Pages with several forms pass distinct ids; the label always points at the input's real id.
+  const id = props.id ?? name;
   return (
-    <Field label={label} name={name} hint={hint} error={error}>
-      <input id={name} name={name} className={inputClass} aria-invalid={error ? true : undefined} {...props} />
+    <Field label={label} name={id} hint={hint} error={error}>
+      <input id={id} name={name} className={inputClass} aria-invalid={error ? true : undefined} {...props} />
     </Field>
   );
 }

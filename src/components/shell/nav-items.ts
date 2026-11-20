@@ -9,12 +9,14 @@ export interface NavItem {
   group?: string;
 }
 
-// Later phases append their screens here (customers, catalog, quotations, orders, challans, users).
+// Later phases append their screens here (catalog, quotations, orders, challans).
 export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/", label: "Dashboard", roles: ["sales"] },
+  { href: "/customers", label: "Customers", roles: ["sales"] },
   { href: "/settings/business", label: "Business profile", roles: ["owner"], group: "Settings" },
   { href: "/settings/numbering", label: "Numbering", roles: ["owner"], group: "Settings" },
   { href: "/settings/terms", label: "Terms", roles: ["sales"], group: "Settings" },
+  { href: "/settings/users", label: "Users", roles: ["owner"], group: "Settings" },
 ];
 
 export function navFor(role: UserRole): NavItem[] {

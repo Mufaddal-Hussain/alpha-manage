@@ -13,12 +13,17 @@ export default async function DashboardPage() {
           Quotations, customers and deliveries will appear here as they are built. For now you can set up the business.
         </p>
       </div>
+      <Link href="/customers" className="block rounded-lg border border-border bg-surface p-4 hover:border-accent sm:max-w-xs">
+        <p className="font-medium">Customers</p>
+        <p className="mt-1 text-sm text-muted">Search, add and edit customers, shipping addresses and contacts</p>
+      </Link>
       {user?.role === "owner" ? (
         <ul className="grid gap-3 sm:grid-cols-3">
           {[
             { href: "/settings/business", title: "Business profile", text: "Name, GSTIN, address, logo, bank details" },
             { href: "/settings/numbering", title: "Numbering", text: "Quotation and challan number formats" },
             { href: "/settings/terms", title: "Terms", text: "Standard terms printed on documents" },
+            { href: "/settings/users", title: "Users", text: "Staff accounts, roles and passwords" },
           ].map((card) => (
             <li key={card.href}>
               <Link href={card.href} className="block h-full rounded-lg border border-border bg-surface p-4 hover:border-accent">
