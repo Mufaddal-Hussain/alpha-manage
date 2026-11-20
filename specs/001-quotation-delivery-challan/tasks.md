@@ -48,13 +48,13 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 
 **Purpose**: Dependencies, tooling and configuration so everything after can be built and tested.
 
-- [ ] T001 Add runtime dependencies to `package.json` (drizzle-orm, a Postgres driver that works with Neon and plain Postgres, zod, decimal.js, better-auth, @react-pdf/renderer, exceljs, @vercel/blob) and run `npm install`
-- [ ] T002 Add dev dependencies to `package.json` (drizzle-kit, vitest, @playwright/test, tsx) and scripts `db:generate`, `db:migrate`, `db:seed`, `test`, `test:e2e`
-- [ ] T003 [P] Create `vitest.config.ts` with path alias `@/` → `src/` and create `tests/unit/`, `tests/integration/`, `tests/e2e/` folders with a placeholder-free smoke test `tests/unit/smoke.test.ts`
-- [ ] T004 [P] Create `playwright.config.ts` (base URL from env, dev-server start command) in the repository root
-- [ ] T005 [P] Create `.env.example` listing `DATABASE_URL`, `AUTH_SECRET`, `BLOB_READ_WRITE_TOKEN`, `STORAGE_DRIVER`, and add `src/lib/env.ts` validating environment variables with zod
-- [ ] T006 Create `drizzle.config.ts` and `src/db/index.ts` (database client from `DATABASE_URL`, usable in server actions and route handlers; must also work against a plain local Postgres)
-- [ ] T007 [P] Add `public/brand/` placeholders instructions in `README.md` for the logo and brand strip images (assets supplied by the owner) and document the setup commands from `quickstart.md`
+- [X] T001 Add runtime dependencies to `package.json` (drizzle-orm, a Postgres driver that works with Neon and plain Postgres, zod, decimal.js, better-auth, @react-pdf/renderer, exceljs, @vercel/blob) and run `npm install`
+- [X] T002 Add dev dependencies to `package.json` (drizzle-kit, vitest, @playwright/test, tsx) and scripts `db:generate`, `db:migrate`, `db:seed`, `test`, `test:e2e`
+- [X] T003 [P] Create `vitest.config.ts` with path alias `@/` → `src/` and create `tests/unit/`, `tests/integration/`, `tests/e2e/` folders with a placeholder-free smoke test `tests/unit/smoke.test.ts`
+- [X] T004 [P] Create `playwright.config.ts` (base URL from env, dev-server start command) in the repository root
+- [X] T005 [P] Create `.env.example` listing `DATABASE_URL`, `AUTH_SECRET`, `BLOB_READ_WRITE_TOKEN`, `STORAGE_DRIVER`, and add `src/lib/env.ts` validating environment variables with zod
+- [X] T006 Create `drizzle.config.ts` and `src/db/index.ts` (database client from `DATABASE_URL`, usable in server actions and route handlers; must also work against a plain local Postgres)
+- [X] T007 [P] Add `public/brand/` placeholders instructions in `README.md` for the logo and brand strip images (assets supplied by the owner) and document the setup commands from `quickstart.md`
 
 ---
 
