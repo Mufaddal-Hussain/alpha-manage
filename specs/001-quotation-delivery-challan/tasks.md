@@ -115,7 +115,7 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 ### Tests for User Story 5
 
 - [X] T030 [P] [US5] Write failing unit tests for GSTIN validation in `tests/unit/gstin.test.ts`: format pattern and first-two-digits-equal-state-code rule per `data-model.md` `customer.gstin` and `customer.state_code`, valid sample `08BOSPP7444G1ZA` (Rajasthan) and `27ABYFA7430K1ZT` (Maharashtra)
-- [ ] T031 [P] [US5] Write Playwright test `tests/e2e/access-control.spec.ts`: signed-out visit to `/customers` redirects to sign-in; a sales user receives no access to `/settings/users` or `/settings/business` _(spec written and type-checked; not yet run because no Playwright browser is installed here. Run `npx playwright install chromium` then `npm run test:e2e`. The same flows were checked by hand in a browser against the test database.)_
+- [X] T031 [P] [US5] Write Playwright test `tests/e2e/access-control.spec.ts`: signed-out visit to `/customers` redirects to sign-in; a sales user receives no access to `/settings/users` or `/settings/business` _(spec written and type-checked; not yet run because no Playwright browser is installed here. Run `npx playwright install chromium` then `npm run test:e2e`. The same flows were checked by hand in a browser against the test database.)_
 
 ### Implementation for User Story 5
 

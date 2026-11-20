@@ -10,7 +10,9 @@ if (!testDb) throw new Error("TEST_DATABASE_URL is not set; e2e tests only run a
 process.env.DATABASE_URL = testDb;
 process.env.DATABASE_URL_UNPOOLED = testDb;
 
-const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
+// Port 3100, not 3000: other local apps often hold 3000, and reusing one of them would test the wrong app.
+const port = 3100;
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? `http://localhost:${port}`;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -27,7 +29,7 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: "npm run dev",
+        command: `npm run dev -- --port ${port}`,
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
