@@ -76,7 +76,7 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 
 ### Core schema
 
-- [ ] T013 Define core tables in `src/db/schema/core.ts`: `user` (role enum per `data-model.md` `user.role`, active flag), `business_profile`, `number_series` (unique series + financial_year per `data-model.md` `number_series.series` and `number_series.financial_year`, `number_series.last_value`), `terms_template`, `audit_log`, `file`; export from `src/db/schema/index.ts`
+- [X] T013 Define core tables in `src/db/schema/core.ts`: `user` (role enum per `data-model.md` `user.role`, active flag), `business_profile`, `number_series` (unique series + financial_year per `data-model.md` `number_series.series` and `number_series.financial_year`, `number_series.last_value`), `terms_template`, `audit_log`, `file`; export from `src/db/schema/index.ts`
 - [ ] T014 Generate and apply the first migration (`src/db/migrations/`) and confirm it runs on an empty local database
 
 ### Pure logic
