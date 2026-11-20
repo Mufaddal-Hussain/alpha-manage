@@ -90,12 +90,12 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 ### Auth, access control and shell
 
 - [ ] T020 Configure Better Auth for email + password with database sessions and the `owner` / `sales` roles in `src/lib/auth/index.ts` and mount its handler under `src/app/api/auth/[...all]/route.ts` (confirm the library's current API in its docs first; fall back to Auth.js if it does not fit)
-- [ ] T021 Implement `src/lib/auth/session.ts` with `requireUser()` and `requireRole(role)` helpers that throw/redirect for unauthenticated or unauthorized callers (authorization lives here, used by every server action and route handler)
-- [ ] T022 Add `src/proxy.ts` that redirects unauthenticated page requests to `/sign-in` (optimistic check only; see the Next.js proxy doc)
-- [ ] T023 [P] Build `src/app/(auth)/sign-in/page.tsx` and its form component in `src/components/auth/sign-in-form.tsx`
-- [ ] T024 Build the authenticated shell in `src/app/(app)/layout.tsx` with sidebar navigation (items hidden by role per `contracts/ui-routes.md`), mobile-friendly header, and sign-out
-- [ ] T025 [P] Implement `src/lib/audit.ts` (`recordAudit(tx, {...})`) and `src/lib/errors.ts` (typed domain errors surfaced as form messages, plus server-side logging)
-- [ ] T026 [P] Implement the storage interface in `src/lib/storage/index.ts` with a Vercel Blob adapter `src/lib/storage/vercel-blob.ts` and a local-disk adapter `src/lib/storage/local.ts`, chosen by `STORAGE_DRIVER`
+- [X] T021 Implement `src/lib/auth/session.ts` with `requireUser()` and `requireRole(role)` helpers that throw/redirect for unauthenticated or unauthorized callers (authorization lives here, used by every server action and route handler)
+- [X] T022 Add `src/proxy.ts` that redirects unauthenticated page requests to `/sign-in` (optimistic check only; see the Next.js proxy doc)
+- [X] T023 [P] Build `src/app/(auth)/sign-in/page.tsx` and its form component in `src/components/auth/sign-in-form.tsx`
+- [X] T024 Build the authenticated shell in `src/app/(app)/layout.tsx` with sidebar navigation (items hidden by role per `contracts/ui-routes.md`), mobile-friendly header, and sign-out
+- [X] T025 [P] Implement `src/lib/audit.ts` (`recordAudit(tx, {...})`) and `src/lib/errors.ts` (typed domain errors surfaced as form messages, plus server-side logging)
+- [X] T026 [P] Implement the storage interface in `src/lib/storage/index.ts` with a Vercel Blob adapter `src/lib/storage/vercel-blob.ts` and a local-disk adapter `src/lib/storage/local.ts`, chosen by `STORAGE_DRIVER`
 - [ ] T027 Implement `GET /api/files/[id]` in `src/app/api/files/[id]/route.ts` (session required; streams from storage; 401/403/404 per `contracts/http-endpoints.md`)
 - [ ] T028 Implement the seed script `src/db/seed.ts`: Alpha Tiles business profile (name, address, GSTIN, state code 27 from the sample documents), default terms template (the six terms on the sample estimate sheet), default numbering series, one owner user with a generated password printed to the console only
 - [ ] T029 [P] Build settings pages for the owner: `src/app/(app)/settings/business/page.tsx` (profile, logo, brand strip, bank details), `src/app/(app)/settings/numbering/page.tsx` (formats, starting numbers), `src/app/(app)/settings/terms/page.tsx` (terms templates), with actions in `src/server/settings.ts`

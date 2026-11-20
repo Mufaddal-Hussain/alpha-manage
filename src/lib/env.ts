@@ -9,6 +9,8 @@ const envSchema = z
     AUTH_SECRET: z.string().min(32, "AUTH_SECRET must be at least 32 characters"),
     STORAGE_DRIVER: z.enum(["vercel-blob", "local"]).default("local"),
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
+    /** Directory for STORAGE_DRIVER=local (relative to the project root unless absolute). */
+    STORAGE_LOCAL_DIR: z.string().default(".data/uploads"),
   })
   .refine((env) => env.STORAGE_DRIVER !== "vercel-blob" || !!env.BLOB_READ_WRITE_TOKEN, {
     path: ["BLOB_READ_WRITE_TOKEN"],
