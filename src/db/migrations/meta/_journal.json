@@ -15,6 +15,13 @@
       "when": 1795206852723,
       "tag": "0001_parties",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795210091621,
+      "tag": "0002_quotations",
+      "breakpoints": true
     }
   ]
 }

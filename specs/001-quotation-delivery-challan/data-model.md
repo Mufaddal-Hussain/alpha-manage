@@ -68,6 +68,8 @@ approved: locked; can only be followed by PO / cancel by owner
 rejected/expired ──reinstate (owner or sales with note)──▶ sent
 ```
 
+**As built (Phase 4).** Stored statuses are `draft`, `sent`, `approved`, `rejected`; **expired is derived** (a `sent` quotation whose current revision's `valid_until` is before today in India time), so there is no `expired_at` column and no job that flips it. Issuing (`issueQuotation`) is the `draft -> sent` step: it takes the number from the series in the same transaction, recomputes and freezes the revision (`quotation_revision.issued_at`), and sets `sent_at`; `sendQuotation` on a draft does the same, and on a `sent` quotation it only records another send. `reviseQuotation` copies the current revision into revision n+1 and returns the quotation to `draft` (number kept) until that revision is issued; a numbered draft cannot be deleted. Reinstating an expired quotation needs a new `valid_until`. `quotation_revision.pdf_file_id` / `pdf_layout` cache the PDF of an issued revision in its own layout. `product` carries no cost or margin yet (Phase 5 adds `price_group_id`, `cost_per_unit`, `margin_percent`).
+
 A quotation gets its number when it first leaves `draft` (issue), so gap-free numbering is not wasted on abandoned drafts. Revisions after sending keep the number and increment `revision_no`.
 
 ## Purchase order (customer PO)

@@ -12,7 +12,9 @@ export interface NavItem {
 // Later phases append their screens here (catalog, quotations, orders, challans).
 export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/", label: "Dashboard", roles: ["sales"] },
+  { href: "/quotations", label: "Quotations", roles: ["sales"] },
   { href: "/customers", label: "Customers", roles: ["sales"] },
+  { href: "/catalog/products", label: "Products", roles: ["sales"] },
   { href: "/settings/business", label: "Business profile", roles: ["owner"], group: "Settings" },
   { href: "/settings/numbering", label: "Numbering", roles: ["owner"], group: "Settings" },
   { href: "/settings/terms", label: "Terms", roles: ["sales"], group: "Settings" },

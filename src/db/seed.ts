@@ -32,10 +32,17 @@ const DEFAULT_TERMS = [
   "No Complaints Will Be Entertained After Laying The Tiles",
 ];
 
+// Non-product charges. HSN/SAC and GST rate are placeholders from the Radius 9 delivery note (transport 8704 at
+// 9% + 9%) until the business verifies them; they are editable data, never constants in code.
+const CHARGE_TYPES = [
+  { name: "Transport Charges", hsnSacCode: "8704", gstRate: "18" },
+  { name: "Loading", hsnSacCode: "9967", gstRate: "18" },
+] as const;
+
 async function main() {
   // Imported after loadEnvConfig so env validation sees .env.local.
   const { getDb } = await import("@/db");
-  const { businessProfile, numberSeries, termsTemplate, user } = await import("@/db/schema");
+  const { businessProfile, chargeType, numberSeries, termsTemplate, user } = await import("@/db/schema");
   const { recordAudit } = await import("@/lib/audit");
   const { createStaffUser } = await import("@/lib/auth/create-user");
   const { financialYearOf } = await import("@/lib/financial-year");
@@ -71,7 +78,16 @@ async function main() {
     if (inserted.length) console.log(`Created ${series} numbering for ${financialYear} (${DEFAULT_FORMATS[series]}).`);
   }
 
-  // 4. Owner user
+  // 4. Charge types for quotations (added by name; existing ones are left as the business edited them)
+  for (const charge of CHARGE_TYPES) {
+    const [existing] = await db.select({ id: chargeType.id }).from(chargeType).where(eq(chargeType.name, charge.name)).limit(1);
+    if (!existing) {
+      await db.insert(chargeType).values(charge);
+      console.log(`Created charge type ${charge.name} (HSN/SAC ${charge.hsnSacCode}, GST ${charge.gstRate}%: confirm with the business).`);
+    }
+  }
+
+  // 5. Owner user
   const [existingOwner] = await db.select({ email: user.email }).from(user).where(eq(user.role, "owner")).limit(1);
   if (existingOwner) {
     console.log(`An owner already exists (${existingOwner.email}); no user created and no password changed.`);
