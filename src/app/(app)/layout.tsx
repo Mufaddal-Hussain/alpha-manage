@@ -3,6 +3,10 @@ import { ShellNav } from "@/components/shell/shell-nav";
 import { navFor } from "@/components/shell/nav-items";
 import { requireUser } from "@/lib/auth/session";
 
+// The whole app sits behind sign-in, so entering it may block on the session read; opt this shared layout
+// out of instant-navigation validation (the pages below still stream behind loading.tsx).
+export const instant = false;
+
 // Everything in the app needs the session, which is a request-time read. It sits behind this one
 // boundary (Cache Components), and each page below can read data freely inside it.
 export default function AppLayout({ children }: LayoutProps<"/">) {

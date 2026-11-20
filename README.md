@@ -24,7 +24,7 @@ npm run dev
 
 Open <http://localhost:3000>. Sign in with the owner account printed by the seed script (credentials are never stored in the repository).
 
-> Until the foundation phase lands, there is no database schema: `db:generate` / `db:migrate` need `src/db/schema/` and `db:seed` runs `src/db/seed.ts`, both created in the next phase. `npm run build`, `npm run lint` and `npm test` already work without a database.
+> The schema lives in `src/db/schema/` and migrations in `src/db/migrations/`. `npm run db:seed` is additive and safe to re-run; it prints the owner's generated password once, on the first run only. `npm run build`, `npm run lint` and the unit tests work without a database.
 
 ### Environment variables
 
@@ -49,7 +49,7 @@ Set these in `.env.local` locally and in the Vercel project (Production and Prev
 | `npm run db:migrate` | Apply migrations to `DATABASE_URL` |
 | `npm run db:seed` | Seed business profile, defaults and the owner user (`src/db/seed.ts`) |
 
-Integration tests that touch the database need `DATABASE_URL` pointing at a throwaway database (a local Postgres or a Neon branch), never production.
+Integration tests (`tests/integration`) use `TEST_DATABASE_URL`, a separate database or Neon branch that is never the main one (they apply migrations to it and insert/delete rows; the helper refuses to run if it matches `DATABASE_URL`). Without it they are skipped with a warning. Keep `DATABASE_URL` on a development branch, not production.
 
 ## Brand images (supplied by the owner)
 

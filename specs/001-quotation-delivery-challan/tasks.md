@@ -72,12 +72,12 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 - [X] T009 [P] Write failing unit tests for GST in `tests/unit/gst.test.ts`: intra-state split into CGST+SGST (half rate each), inter-state IGST, place-of-supply decision from state codes, the Radius 9 case (2,870.00 taxable at 18% → CGST 258.30, SGST 258.30; inter-state IGST 516.60)
 - [X] T010 [P] Write failing unit tests for amount in words in `tests/unit/amount-in-words.test.ts`: Indian numbering (lakh, crore), paise, and the exact string "INR Three Thousand Three Hundred Eighty Seven Only" for 3,387.00
 - [X] T011 [P] Write failing unit tests for financial-year helpers in `tests/unit/financial-year.test.ts`: April–March year label (for example 2026-27), boundaries on 31 March and 1 April
-- [ ] T012 [P] Write failing integration test for gap-free numbering in `tests/integration/numbering.test.ts`: 50 numbers requested concurrently from one series and year are unique and consecutive; a new financial year restarts at 1; a rolled-back transaction does not consume a number (needs a real Postgres)
+- [X] T012 [P] Write failing integration test for gap-free numbering in `tests/integration/numbering.test.ts`: 50 numbers requested concurrently from one series and year are unique and consecutive; a new financial year restarts at 1; a rolled-back transaction does not consume a number (needs a real Postgres)
 
 ### Core schema
 
 - [X] T013 Define core tables in `src/db/schema/core.ts`: `user` (role enum per `data-model.md` `user.role`, active flag), `business_profile`, `number_series` (unique series + financial_year per `data-model.md` `number_series.series` and `number_series.financial_year`, `number_series.last_value`), `terms_template`, `audit_log`, `file`; export from `src/db/schema/index.ts`
-- [ ] T014 Generate and apply the first migration (`src/db/migrations/`) and confirm it runs on an empty local database
+- [X] T014 Generate and apply the first migration (`src/db/migrations/`) and confirm it runs on an empty local database
 
 ### Pure logic
 
@@ -85,20 +85,20 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 - [X] T016 [P] Add Indian state-code data in `src/lib/gst/state-codes.ts` (code, name, GSTIN prefix) and implement `src/lib/gst.ts` (tax mode, split, per-line tax) until T009 passes
 - [X] T017 [P] Implement `src/lib/amount-in-words.ts` until T010 passes
 - [X] T018 [P] Implement `src/lib/financial-year.ts` until T011 passes
-- [ ] T019 Implement `src/lib/numbering.ts`: `nextNumber(tx, series, date)` using an upsert-and-return on `number_series` inside the caller's transaction, formatting from the series format (`QT/{FY}/{N}`) until T012 passes (depends on T013–T014, T018)
+- [X] T019 Implement `src/lib/numbering.ts`: `nextNumber(tx, series, date)` using an upsert-and-return on `number_series` inside the caller's transaction, formatting from the series format (`QT/{FY}/{N}`) until T012 passes (depends on T013–T014, T018)
 
 ### Auth, access control and shell
 
-- [ ] T020 Configure Better Auth for email + password with database sessions and the `owner` / `sales` roles in `src/lib/auth/index.ts` and mount its handler under `src/app/api/auth/[...all]/route.ts` (confirm the library's current API in its docs first; fall back to Auth.js if it does not fit)
+- [X] T020 Configure Better Auth for email + password with database sessions and the `owner` / `sales` roles in `src/lib/auth/index.ts` and mount its handler under `src/app/api/auth/[...all]/route.ts` (confirm the library's current API in its docs first; fall back to Auth.js if it does not fit)
 - [X] T021 Implement `src/lib/auth/session.ts` with `requireUser()` and `requireRole(role)` helpers that throw/redirect for unauthenticated or unauthorized callers (authorization lives here, used by every server action and route handler)
 - [X] T022 Add `src/proxy.ts` that redirects unauthenticated page requests to `/sign-in` (optimistic check only; see the Next.js proxy doc)
 - [X] T023 [P] Build `src/app/(auth)/sign-in/page.tsx` and its form component in `src/components/auth/sign-in-form.tsx`
 - [X] T024 Build the authenticated shell in `src/app/(app)/layout.tsx` with sidebar navigation (items hidden by role per `contracts/ui-routes.md`), mobile-friendly header, and sign-out
 - [X] T025 [P] Implement `src/lib/audit.ts` (`recordAudit(tx, {...})`) and `src/lib/errors.ts` (typed domain errors surfaced as form messages, plus server-side logging)
 - [X] T026 [P] Implement the storage interface in `src/lib/storage/index.ts` with a Vercel Blob adapter `src/lib/storage/vercel-blob.ts` and a local-disk adapter `src/lib/storage/local.ts`, chosen by `STORAGE_DRIVER`
-- [ ] T027 Implement `GET /api/files/[id]` in `src/app/api/files/[id]/route.ts` (session required; streams from storage; 401/403/404 per `contracts/http-endpoints.md`)
-- [ ] T028 Implement the seed script `src/db/seed.ts`: Alpha Tiles business profile (name, address, GSTIN, state code 27 from the sample documents), default terms template (the six terms on the sample estimate sheet), default numbering series, one owner user with a generated password printed to the console only
-- [ ] T029 [P] Build settings pages for the owner: `src/app/(app)/settings/business/page.tsx` (profile, logo, brand strip, bank details), `src/app/(app)/settings/numbering/page.tsx` (formats, starting numbers), `src/app/(app)/settings/terms/page.tsx` (terms templates), with actions in `src/server/settings.ts`
+- [X] T027 Implement `GET /api/files/[id]` in `src/app/api/files/[id]/route.ts` (session required; streams from storage; 401/403/404 per `contracts/http-endpoints.md`)
+- [X] T028 Implement the seed script `src/db/seed.ts`: Alpha Tiles business profile (name, address, GSTIN, state code 27 from the sample documents), default terms template (the six terms on the sample estimate sheet), default numbering series, one owner user with a generated password printed to the console only
+- [X] T029 [P] Build settings pages for the owner: `src/app/(app)/settings/business/page.tsx` (profile, logo, brand strip, bank details), `src/app/(app)/settings/numbering/page.tsx` (formats, starting numbers), `src/app/(app)/settings/terms/page.tsx` (terms templates), with actions in `src/server/settings.ts`
 
 **Checkpoint**: Foundation ready. Unit and numbering tests pass, owner can sign in, settings are editable.
 

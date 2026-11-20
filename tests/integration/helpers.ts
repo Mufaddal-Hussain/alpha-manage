@@ -1,11 +1,8 @@
 import path from "node:path";
-import { loadEnvConfig } from "@next/env";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool } from "pg";
 import * as schema from "@/db/schema";
-
-loadEnvConfig(process.cwd());
 
 /** True when integration tests have a database to run against. */
 export function hasTestDb(): boolean {
