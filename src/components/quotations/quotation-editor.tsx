@@ -473,7 +473,7 @@ export function QuotationEditor({ settings, chargeTypes, initial }: { settings: 
             type="search"
             value={productTerm}
             onChange={(e) => setProductTerm(e.target.value)}
-            placeholder="Search products by name, code, size or finish"
+            placeholder="Search products by name, brand, code, size or finish"
             aria-label="Add product"
             className={inputClass}
           />
@@ -484,7 +484,7 @@ export function QuotationEditor({ settings, chargeTypes, initial }: { settings: 
                   <button type="button" onClick={() => addProduct(p)} className="flex w-full flex-wrap justify-between gap-2 px-4 py-2 text-left text-sm hover:bg-border/40">
                     <span className="font-medium">{p.name}</span>
                     <span className="text-muted">
-                      {[p.sizeLabel, p.finish].filter(Boolean).join(" · ")}
+                      {[p.brandName, p.sizeLabel, p.finish].filter(Boolean).join(" · ")}
                       {p.sellingPrice ? ` · ₹ ${formatInr(p.sellingPrice)} / ${p.unit === "sqft" ? "sq.ft" : p.unit}` : " · no price set"}
                     </span>
                   </button>

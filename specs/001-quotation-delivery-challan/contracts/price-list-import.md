@@ -18,7 +18,7 @@ One row per **price row of a group** (a group may have several rows). Header row
 | `designs` | yes | `Imperia Silver; Imperia Pearl; Star white` | Separated by `;` |
 | `hsn_code` | no | `6907` | Default taken from settings if blank |
 
-Validation: all required columns present; numbers parse; `rate_per_box ÷ sqft_per_box` within ₹1 of `rate_per_sqft`; a design name appears at most once per brand + size + list; duplicate design names inside one cell are collapsed with a warning.
+Validation: all required columns present; numbers parse; `rate_per_box ÷ sqft_per_box` within ₹1 of `rate_per_sqft`; a design name appears at most once per brand + size + finish + list (the finish is part of the key because the printed Bi'mor list repeats "Calico Crema Endless" under both Glossy and Carving at 1200 x 600, and the diff below also matches on size, finish and design; changed in Phase 5 after meeting the sample); duplicate design names inside one cell are collapsed with a warning.
 
 ## PDF import (deferred, informational)
 

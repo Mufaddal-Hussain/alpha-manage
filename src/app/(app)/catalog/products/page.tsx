@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
-import { searchProducts } from "@/server/product-queries";
+import { countProductsNeedingReview, searchProducts } from "@/server/product-queries";
 
 export const metadata = { title: "Products · alpha-Manage" };
 
@@ -12,7 +12,8 @@ export default async function ProductsPage({ searchParams }: PageProps<"/catalog
   const params = await searchParams;
   const q = typeof params.q === "string" ? params.q : "";
   const includeDiscontinued = params.discontinued === "1";
-  const products = await searchProducts(q, { includeDiscontinued });
+  const needsReview = params.review === "1";
+  const [products, reviewCount] = await Promise.all([searchProducts(q, { includeDiscontinued, needsReviewOnly: needsReview }), countProductsNeedingReview()]);
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
@@ -31,21 +32,33 @@ export default async function ProductsPage({ searchParams }: PageProps<"/catalog
           type="search"
           name="q"
           defaultValue={q}
-          placeholder="Name, code, size or finish"
+          placeholder="Name, brand, code, size or finish"
           aria-label="Search products"
           className="min-w-0 flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
         />
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" name="discontinued" value="1" defaultChecked={includeDiscontinued} /> Include discontinued
         </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="review" value="1" defaultChecked={needsReview} /> Cost changed, needs review
+        </label>
         <button type="submit" className="rounded-md border border-border px-4 py-2 text-sm hover:bg-border/60">
           Search
         </button>
       </form>
 
+      {reviewCount > 0 && !needsReview ? (
+        <p role="status" className="rounded-md border border-amber-500/60 bg-amber-500/10 px-4 py-2 text-sm">
+          {reviewCount} {reviewCount === 1 ? "product has" : "products have"} a cost change waiting for a selling-price review.{" "}
+          <Link href="/catalog/products?review=1" className="font-medium text-accent hover:underline">
+            Show them
+          </Link>
+        </p>
+      ) : null}
+
       {products.length === 0 ? (
         <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted">
-          {q ? `No products match “${q}”.` : "No products yet. Add the first one."}
+          {needsReview ? "No products are waiting for a selling-price review." : q ? `No products match “${q}”.` : "No products yet. Add the first one."}
         </p>
       ) : (
         <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
@@ -57,12 +70,20 @@ export default async function ProductsPage({ searchParams }: PageProps<"/catalog
                   {p.status === "discontinued" ? (
                     <span className="ml-2 rounded-full border border-border px-2 py-0.5 text-xs font-normal text-muted">Discontinued</span>
                   ) : null}
+                  {p.costReviewNeeded ? (
+                    <span className="ml-2 rounded-full border border-amber-500/60 bg-amber-500/10 px-2 py-0.5 text-xs font-normal text-amber-700 dark:text-amber-400">
+                      Cost changed, review selling price
+                    </span>
+                  ) : null}
                 </span>
                 <span className="text-sm text-muted">
                   {[p.sizeLabel, p.finish].filter(Boolean).join(" · ")}
                   {p.sizeLabel || p.finish ? " · " : ""}
+                  {p.brandName ? `${p.brandName} · ` : ""}
                   HSN {p.hsnCode} · GST {Number(p.gstRate)}%
+                  {p.costPerUnit ? ` · cost ${inr.format(Number(p.costPerUnit))}` : ""}
                   {p.sellingPricePerUnit ? ` · ${inr.format(Number(p.sellingPricePerUnit))} / ${UNIT_LABEL[p.unit]}` : " · no price set"}
+                  {p.marginPercent ? ` · margin ${Number(p.marginPercent)}%` : ""}
                 </span>
               </Link>
             </li>

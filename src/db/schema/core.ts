@@ -5,6 +5,7 @@ import {
   index,
   integer,
   jsonb,
+  numeric,
   pgEnum,
   pgTable,
   text,
@@ -147,6 +148,9 @@ export const businessProfile = pgTable(
     bankAccountNo: text("bank_account_no"),
     bankIfsc: text("bank_ifsc"),
     defaultQuotationValidityDays: integer("default_quotation_validity_days").notNull().default(15),
+    /** HSN code and GST rate given to products created by a price-list import. Editable data, never constants in code. */
+    defaultHsnCode: text("default_hsn_code"),
+    defaultGstRate: numeric("default_gst_rate", { precision: 5, scale: 2 }),
     defaultTermsTemplateId: uuid("default_terms_template_id").references(() => termsTemplate.id, {
       onDelete: "set null",
     }),

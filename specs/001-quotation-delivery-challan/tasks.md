@@ -175,21 +175,21 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 
 ### Tests for User Story 2
 
-- [ ] T052 [P] [US2] Create fixtures in `tests/fixtures/price-lists/` as Excel/CSV files built from `samples/PRICE LIST 01.08.2026.pdf` and `samples/SHCO PL-R 6.1-SEP26.pdf` (including the Icon "Matt & Rustic" group with two price rows and a deliberately wrong rate row)
-- [ ] T053 [P] [US2] Write failing unit tests for the template parser and rules in `tests/unit/price-list-parse.test.ts`: required columns, `;`-separated designs, rate per box ÷ sq.ft per box within ₹1 of rate per sq.ft, duplicate design in a list, missing packing
-- [ ] T054 [P] [US2] Write failing integration tests in `tests/integration/price-list-import.test.ts`: diff semantics (new / changed / unchanged / removed), approval creates a new price list version, product cost updated, `product.selling_price_per_unit` unchanged, existing `quotation_line` rates unchanged
+- [X] T052 [P] [US2] Create fixtures in `tests/fixtures/price-lists/` as Excel/CSV files built from `samples/PRICE LIST 01.08.2026.pdf` and `samples/SHCO PL-R 6.1-SEP26.pdf` (including the Icon "Matt & Rustic" group with two price rows and a deliberately wrong rate row)
+- [X] T053 [P] [US2] Write failing unit tests for the template parser and rules in `tests/unit/price-list-parse.test.ts`: required columns, `;`-separated designs, rate per box ÷ sq.ft per box within ₹1 of rate per sq.ft, duplicate design in a list, missing packing
+- [X] T054 [P] [US2] Write failing integration tests in `tests/integration/price-list-import.test.ts`: diff semantics (new / changed / unchanged / removed), approval creates a new price list version, product cost updated, `product.selling_price_per_unit` unchanged, existing `quotation_line` rates unchanged
 
 ### Implementation for User Story 2
 
-- [ ] T055 [US2] Define catalog tables in `src/db/schema/catalog.ts`: `brand`, `price_list` (`data-model.md` `price_list.status`), `price_group`, `design`, `price_group_design`, `import_job` (`import_job.status`, `import_job.source_type`), `import_row` (`import_row.kind`); extend `product` with `price_group_id`, `cost_per_unit`, `margin_percent` (`data-model.md` `product.cost_per_unit`, `product.margin_percent`); generate the migration
-- [ ] T056 [P] [US2] Implement the template builder (downloadable `.xlsx`) and parser in `src/lib/import/price-list-template.ts` per `contracts/price-list-import.md`, with validation rules in `src/lib/import/price-list-rules.ts` until T053 passes
-- [ ] T057 [US2] Implement diff and approval logic in `src/lib/import/price-list-diff.ts` and actions in `src/server/catalog.ts` (`startPriceListImport`, `approveImport`, `setSellingPrice` keeping price and margin consistent, `markProductDiscontinued`) until T054 passes
-- [ ] T058 [P] [US2] Build brand and distributor pages in `src/app/(app)/catalog/brands/page.tsx` (owner manages, sales view)
-- [ ] T059 [US2] Build the import flow: `src/app/(app)/catalog/import/new/page.tsx` (brand, file upload, optional reference PDF attached per FR-007, template download link) and `src/app/(app)/catalog/import/[jobId]/page.tsx` (review table with new/changed/unchanged/error rows and warnings, accept/skip/fix rows, Approve)
-- [ ] T060 [US2] Build price list history in `src/app/(app)/catalog/price-lists/page.tsx` and `src/app/(app)/catalog/price-lists/[id]/page.tsx` (groups, designs, comparison with the previous version, link to the reference PDF)
-- [ ] T061 [US2] Update product pages from T042 to show cost price, margin and "cost changed, review selling price" flags, and make the quotation editor product search (T046) show brand/size/finish and use the selling price
-- [ ] T062 [US2] Implement the optional chunked endpoint `src/app/api/imports/[jobId]/process/route.ts` only if the parser exceeds request limits on real lists; otherwise skip and note it in `contracts/http-endpoints.md`
-- [ ] T063 [US2] Verify quickstart scenario 6 by importing groups from both sample lists end to end
+- [X] T055 [US2] Define catalog tables in `src/db/schema/catalog.ts`: `brand`, `price_list` (`data-model.md` `price_list.status`), `price_group`, `design`, `price_group_design`, `import_job` (`import_job.status`, `import_job.source_type`), `import_row` (`import_row.kind`); extend `product` with `price_group_id`, `cost_per_unit`, `margin_percent` (`data-model.md` `product.cost_per_unit`, `product.margin_percent`); generate the migration
+- [X] T056 [P] [US2] Implement the template builder (downloadable `.xlsx`) and parser in `src/lib/import/price-list-template.ts` per `contracts/price-list-import.md`, with validation rules in `src/lib/import/price-list-rules.ts` until T053 passes
+- [X] T057 [US2] Implement diff and approval logic in `src/lib/import/price-list-diff.ts` and actions in `src/server/catalog.ts` (`startPriceListImport`, `approveImport`, `setSellingPrice` keeping price and margin consistent, `markProductDiscontinued`) until T054 passes
+- [X] T058 [P] [US2] Build brand and distributor pages in `src/app/(app)/catalog/brands/page.tsx` (owner manages, sales view)
+- [X] T059 [US2] Build the import flow: `src/app/(app)/catalog/import/new/page.tsx` (brand, file upload, optional reference PDF attached per FR-007, template download link) and `src/app/(app)/catalog/import/[jobId]/page.tsx` (review table with new/changed/unchanged/error rows and warnings, accept/skip/fix rows, Approve)
+- [X] T060 [US2] Build price list history in `src/app/(app)/catalog/price-lists/page.tsx` and `src/app/(app)/catalog/price-lists/[id]/page.tsx` (groups, designs, comparison with the previous version, link to the reference PDF)
+- [X] T061 [US2] Update product pages from T042 to show cost price, margin and "cost changed, review selling price" flags, and make the quotation editor product search (T046) show brand/size/finish and use the selling price
+- [X] T062 [US2] Implement the optional chunked endpoint `src/app/api/imports/[jobId]/process/route.ts` only if the parser exceeds request limits on real lists; otherwise skip and note it in `contracts/http-endpoints.md`
+- [X] T063 [US2] Verify quickstart scenario 6 by importing groups from both sample lists end to end
 
 **Checkpoint**: Catalog import works; quotations and catalog are independent but integrated through the product search.
 

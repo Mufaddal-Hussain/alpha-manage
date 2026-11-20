@@ -56,3 +56,48 @@ export async function deleteStoredFile(fileId: string): Promise<void> {
   const [row] = await db.delete(file).where(eq(file.id, fileId)).returning({ storageKey: file.storageKey });
   if (row) await getStorage().delete(row.storageKey);
 }
+
+/** Spreadsheet and PDF uploads for price lists (T059): the template to import and the distributor's PDF kept for reference. */
+export const DOCUMENT_KINDS = {
+  /** The Excel/CSV template that is read by the import. */
+  template: { maxBytes: 5 * 1024 * 1024, label: "template" },
+  /** The distributor's original PDF: attached to a price list for reference, never read by the system (FR-007). */
+  reference: { maxBytes: 15 * 1024 * 1024, label: "PDF" },
+} as const;
+
+/** Detects what an uploaded document really is from its first bytes and its name; the browser's MIME type is not trusted. */
+function sniffDocument(bytes: Buffer, name: string, kind: keyof typeof DOCUMENT_KINDS): string | null {
+  const lower = name.toLowerCase();
+  if (kind === "reference") {
+    return lower.endsWith(".pdf") && bytes.subarray(0, 5).toString("ascii") === "%PDF-" ? "application/pdf" : null;
+  }
+  if (lower.endsWith(".xlsx") && bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04) {
+    return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  }
+  if (lower.endsWith(".csv") && !bytes.includes(0)) return "text/csv";
+  return null;
+}
+
+/** Validates an uploaded template or reference PDF, stores its bytes and records it in the `file` table. */
+export async function saveDocumentUpload(upload: File, uploadedBy: string, kind: keyof typeof DOCUMENT_KINDS): Promise<{ record: FileRecord; bytes: Buffer }> {
+  const { maxBytes, label } = DOCUMENT_KINDS[kind];
+  if (upload.size === 0) throw new ValidationError("The selected file is empty");
+  if (upload.size > maxBytes) throw new ValidationError(`The ${label} is too large (limit ${Math.round(maxBytes / 1024 / 1024)} MB)`);
+  const bytes = Buffer.from(await upload.arrayBuffer());
+  const detected = sniffDocument(bytes, upload.name, kind);
+  if (!detected) {
+    throw new ValidationError(kind === "reference" ? "The reference file must be a PDF" : "Choose the price-list template as an .xlsx or .csv file");
+  }
+  const storageKey = `uploads/${randomUUID()}/${safeName(upload.name)}`;
+  await getStorage().put(storageKey, bytes, { contentType: detected });
+  try {
+    const [record] = await getDb()
+      .insert(file)
+      .values({ storageKey, originalName: safeName(upload.name), mimeType: detected, size: bytes.length, uploadedBy })
+      .returning();
+    return { record, bytes };
+  } catch (error) {
+    await getStorage().delete(storageKey);
+    throw error;
+  }
+}

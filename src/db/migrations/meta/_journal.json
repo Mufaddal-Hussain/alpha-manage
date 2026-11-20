@@ -22,6 +22,13 @@
       "when": 1795210091621,
       "tag": "0002_quotations",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795213678318,
+      "tag": "0003_catalog",
+      "breakpoints": true
     }
   ]
 }

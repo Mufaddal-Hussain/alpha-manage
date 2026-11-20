@@ -26,6 +26,13 @@ const productFields = z.object({
       .refine((v) => v !== "", "Required")
       .refine((v) => Number(v) <= 100, "GST rate cannot be more than 100"),
     sellingPricePerUnit: decimal("Selling price", 2).transform((v) => (v === "" ? null : v)),
+    /** Margin on cost, in percent. Only meaningful for products with a cost price; the server keeps it consistent with the price. */
+    marginPercent: z
+      .string()
+      .trim()
+      .refine((v) => v === "" || /^-?\d+(\.\d{1,2})?$/.test(v), "Margin must be a number with at most 2 decimals")
+      .optional()
+      .default(""),
 });
 
 export const productSchema = productFields.superRefine((value, ctx) => {
@@ -38,6 +45,6 @@ export const productSchema = productFields.superRefine((value, ctx) => {
 });
 
 /** What sales staff may change on an existing product. */
-export const sellingPriceSchema = productFields.pick({ sellingPricePerUnit: true });
+export const sellingPriceSchema = productFields.pick({ sellingPricePerUnit: true, marginPercent: true });
 
 export type ProductValues = z.output<typeof productSchema>;

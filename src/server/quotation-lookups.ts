@@ -34,6 +34,8 @@ export interface ProductOption {
   sellingPrice: string | null;
   sizeLabel: string | null;
   finish: string | null;
+  /** Set for products created from a price list. */
+  brandName: string | null;
 }
 
 const joinLines = (parts: (string | null | undefined)[]) => parts.map((p) => p?.trim()).filter(Boolean).join(", ");
@@ -82,5 +84,6 @@ export async function lookupProducts(term: string): Promise<ProductOption[]> {
     sellingPrice: p.sellingPricePerUnit,
     sizeLabel: p.sizeLabel,
     finish: p.finish,
+    brandName: p.brandName,
   }));
 }

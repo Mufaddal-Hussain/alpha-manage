@@ -109,6 +109,17 @@ export function BusinessForm({ profile, templates }: { profile: BusinessProfile 
         </div>
       </section>
 
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-medium">Catalog defaults</h2>
+        <p className="text-sm text-muted">
+          Given to new products created by a price-list import when the template row has no HSN code. They are editable data on every product; the business verifies them.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextInput name="defaultHsnCode" label="Default HSN code" hint="Tiles are usually 6907" defaultValue={p?.defaultHsnCode ?? ""} maxLength={12} result={result} />
+          <TextInput name="defaultGstRate" label="Default GST rate (%)" hint="Full rate, e.g. 18" inputMode="decimal" defaultValue={p?.defaultGstRate ? String(Number(p.defaultGstRate)) : ""} result={result} />
+        </div>
+      </section>
+
       <div>
         <SubmitButton>Save business profile</SubmitButton>
       </div>

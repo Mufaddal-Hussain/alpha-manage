@@ -10,6 +10,7 @@ import { recordAudit } from "@/lib/audit";
 import { requireRole, requireUser } from "@/lib/auth/session";
 import { NotFoundError, runAction, type ActionResult } from "@/lib/errors";
 import { parseForm } from "@/lib/form";
+import { resolveSelling } from "@/lib/catalog/pricing";
 import { productSchema, sellingPriceSchema } from "@/lib/product-schema";
 
 // Manual product management (T042). Any signed-in staff member can add products and set selling prices;
@@ -23,7 +24,9 @@ function productPaths(id?: string) {
 export async function createProduct(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
   const result = await runAction(async () => {
     const user = await requireUser();
-    const values = parseForm(productSchema, formData);
+    // A hand-entered product has no cost price, so there is no margin to keep (marginPercent is ignored here).
+    const { marginPercent, ...values } = parseForm(productSchema, formData);
+    void marginPercent;
     const created = await getDb().transaction(async (tx) => {
       const [row] = await tx.insert(product).values(values).returning({ id: product.id });
       await recordAudit(tx, { userId: user.id, entityType: "product", entityId: row.id, action: "create", note: values.name });
@@ -43,13 +46,25 @@ export async function updateProduct(_prev: ActionResult | null, formData: FormDa
     await getDb().transaction(async (tx) => {
       const [existing] = await tx.select().from(product).where(eq(product.id, id)).for("update");
       if (!existing) throw new NotFoundError("That product no longer exists");
+      // Price and margin stay consistent: whichever the person changed wins and the other follows (FR-009).
+      // Saving the price also counts as the review of a cost change made by an import.
+      const resolveFrom = (price: string | null, margin: string) =>
+        resolveSelling({ cost: existing.costPerUnit, currentPrice: existing.sellingPricePerUnit, currentMargin: existing.marginPercent, price, margin });
       if (user.role === "owner") {
-        const values = parseForm(productSchema, formData);
-        await tx.update(product).set(values).where(eq(product.id, id));
+        const { marginPercent, ...values } = parseForm(productSchema, formData);
+        const selling = resolveFrom(values.sellingPricePerUnit, marginPercent);
+        await tx
+          .update(product)
+          .set({ ...values, sellingPricePerUnit: selling.price, marginPercent: selling.margin, costReviewNeeded: false })
+          .where(eq(product.id, id));
       } else {
         // Sales staff may only change the selling price; everything else keeps its stored value.
         const values = parseForm(sellingPriceSchema, formData);
-        await tx.update(product).set({ sellingPricePerUnit: values.sellingPricePerUnit }).where(eq(product.id, id));
+        const selling = resolveFrom(values.sellingPricePerUnit, values.marginPercent);
+        await tx
+          .update(product)
+          .set({ sellingPricePerUnit: selling.price, marginPercent: selling.margin, costReviewNeeded: false })
+          .where(eq(product.id, id));
       }
       await recordAudit(tx, { userId: user.id, entityType: "product", entityId: id, action: "update" });
     });

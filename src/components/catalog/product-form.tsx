@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { Field, FormMessage, inputClass, TextInput } from "@/components/ui/form";
 import { useFormAction } from "@/components/ui/use-form-action";
 import type { Product } from "@/db/schema";
+import { setSellingPrice } from "@/server/catalog";
 import { createProduct, updateProduct } from "@/server/products";
 
 /**
@@ -10,8 +12,22 @@ import { createProduct, updateProduct } from "@/server/products";
  * selling price is read-only (the server enforces this too).
  */
 export function ProductForm({ product, salesOnly = false }: { product: Product | null; salesOnly?: boolean }) {
-  const { result, pending, onSubmit } = useFormAction(product ? updateProduct : createProduct);
+  const { result, pending, onSubmit } = useFormAction(product ? (salesOnly ? setSellingPrice : updateProduct) : createProduct);
   const p = product;
+  // Price and margin on cost move together as you type; the server recomputes them exactly when it saves.
+  const cost = p?.costPerUnit ? Number(p.costPerUnit) : null;
+  const [price, setPrice] = useState(p?.sellingPricePerUnit ?? "");
+  const [margin, setMargin] = useState(p?.marginPercent ?? "");
+  function onPrice(value: string) {
+    setPrice(value);
+    const n = Number(value);
+    setMargin(cost && value.trim() !== "" && Number.isFinite(n) ? (((n - cost) / cost) * 100).toFixed(2) : "");
+  }
+  function onMargin(value: string) {
+    setMargin(value);
+    const m = Number(value);
+    if (cost && value.trim() !== "" && Number.isFinite(m)) setPrice((cost * (1 + m / 100)).toFixed(2));
+  }
   const locked = salesOnly;
   const unitError = result && !result.ok ? result.fieldErrors?.unit : undefined;
   return (
@@ -51,9 +67,21 @@ export function ProductForm({ product, salesOnly = false }: { product: Product |
           label="Selling price (₹, ex-GST)"
           hint="Per box, sq.ft or piece, whichever it is sold by"
           inputMode="decimal"
-          defaultValue={p?.sellingPricePerUnit ?? ""}
+          value={price}
+          onChange={(e) => onPrice(e.target.value)}
           result={result}
         />
+        {cost !== null ? (
+          <TextInput
+            name="marginPercent"
+            label="Margin on cost (%)"
+            hint={`Selling price = cost ₹${cost.toFixed(2)} × (1 + margin). Change either; the other follows.`}
+            inputMode="decimal"
+            value={margin}
+            onChange={(e) => onMargin(e.target.value)}
+            result={result}
+          />
+        ) : null}
       </div>
 
       <div>
@@ -62,7 +90,7 @@ export function ProductForm({ product, salesOnly = false }: { product: Product |
           disabled={pending}
           className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:opacity-90 disabled:opacity-60"
         >
-          {pending ? "Saving…" : p ? "Save product" : "Create product"}
+          {pending ? "Saving…" : p ? (salesOnly ? "Save selling price" : "Save product") : "Create product"}
         </button>
       </div>
     </form>

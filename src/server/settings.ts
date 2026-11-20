@@ -44,6 +44,12 @@ const businessSchema = z
       .refine((v) => v === null || /^[A-Z]{4}0[A-Z0-9]{6}$/.test(v), "IFSC must look like HDFC0001234"),
     defaultQuotationValidityDays: z.coerce.number().int("Whole days only").min(1, "At least 1 day").max(365),
     defaultTermsTemplateId: uuidOrEmpty,
+    defaultHsnCode: optionalText(12),
+    defaultGstRate: z
+      .string()
+      .trim()
+      .refine((v) => v === "" || (/^\d+(\.\d{1,2})?$/.test(v) && Number(v) <= 100), "A GST rate between 0 and 100, up to 2 decimals")
+      .transform((v) => (v === "" ? null : v)),
   })
   .refine((v) => v.gstin === null || v.gstin.startsWith(v.stateCode), {
     path: ["gstin"],

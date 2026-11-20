@@ -17,8 +17,9 @@ export async function GET(_request: NextRequest, ctx: RouteContext<"/api/files/[
 
   const [row] = await getDb().select().from(file).where(eq(file.id, id)).limit(1);
   if (!row) return Response.json({ error: "Not found" }, { status: 404 });
-  // Phase 2 only stores the business logo and brand strip, which every signed-in staff member may see.
-  // When PO attachments and import sources arrive, check the owning record here and answer 403.
+  // The business logo and brand strip, and price-list files (the import template and the distributor's reference PDF),
+  // are visible to every signed-in staff member (sales may view the catalog). When PO attachments arrive, check the
+  // owning record here and answer 403.
 
   const stored = await getStorage().get(row.storageKey);
   if (!stored) return Response.json({ error: "Not found" }, { status: 404 });
@@ -27,7 +28,8 @@ export async function GET(_request: NextRequest, ctx: RouteContext<"/api/files/[
     headers: {
       "Content-Type": row.mimeType,
       "Content-Length": String(stored.size ?? row.size),
-      "Content-Disposition": `inline; filename*=UTF-8''${encodeURIComponent(row.originalName)}`,
+      // Images display in place; documents (PDF, spreadsheets) download, so an untrusted file is never rendered by the browser.
+      "Content-Disposition": `${row.mimeType.startsWith("image/") ? "inline" : "attachment"}; filename*=UTF-8''${encodeURIComponent(row.originalName)}`,
       // Stored files are untrusted uploads: never sniff or execute them.
       "X-Content-Type-Options": "nosniff",
       "Content-Security-Policy": "default-src 'none'; sandbox",

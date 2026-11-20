@@ -19,9 +19,13 @@ Query: `prices` (`show` | `hide`, default from the challan), `download`.
 
 Streams a stored file (PO attachment, import source, logo) after checking the caller may see the owning record. `200` with the original content type; `403`/`404` otherwise. Never exposes a public storage URL.
 
+## `GET /api/imports/template`
+
+The blank price-list template (`.xlsx`: the `Prices` sheet with its header row and one example row, plus a help sheet). Signed-in staff; `401` otherwise.
+
 ## `POST /api/imports/[jobId]/process`
 
-Reserved for chunked processing of large imports (and a future PDF pipeline). Phase 1 Excel/CSV imports are parsed in one request, so this endpoint may be omitted until needed. Processes the next chunk of an import job and updates `import_job` progress. Idempotent per chunk. Called repeatedly by the import page until `status = needs_review`.
+**Not built (T062 skipped, Phase 5).** Reserved for chunked processing of large imports (and a future PDF pipeline). Excel/CSV imports are parsed in one request: an integration test imports and approves a 2,000-design list (400 rows) against Neon, asserting each step stays under 30 s (the whole test, cleanup included, ran in about 25 s); parsing and diffing are in memory and saving uses bulk inserts, so no chunked endpoint exists. Build it only if a real list exceeds the limits. Processes the next chunk of an import job and updates `import_job` progress. Idempotent per chunk. Called repeatedly by the import page until `status = needs_review`.
 
 - `200 { status, processed, total, nextChunk }`
 - `409` if the job is already approved; `422` if the file cannot be read (message surfaced in the UI).
