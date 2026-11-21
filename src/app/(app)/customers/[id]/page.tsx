@@ -21,7 +21,7 @@ export default async function CustomerPage({ params }: PageProps<"/customers/[id
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8">
       <div>
-        <Link href="/customers" className="text-sm text-muted hover:underline">
+        <Link href="/customers" className="tap text-sm text-muted hover:underline">
           ← Customers
         </Link>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-3">

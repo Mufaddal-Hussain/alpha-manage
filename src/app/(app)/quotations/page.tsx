@@ -49,20 +49,20 @@ export default async function QuotationsPage({ searchParams }: PageProps<"/quota
             </option>
           ))}
         </select>
-        <div className="flex gap-2 sm:col-span-2 lg:col-span-6">
-          <label className="flex items-center gap-2 text-sm text-muted">
+        <div className="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-6">
+          <label className="flex min-w-[10rem] flex-1 items-center gap-2 text-sm text-muted sm:flex-none">
             From
-            <input type="date" name="from" defaultValue={from} aria-label="From date" className={field} />
+            <input type="date" name="from" defaultValue={from} aria-label="From date" className={`${field} min-w-0 flex-1`} />
           </label>
-          <label className="flex items-center gap-2 text-sm text-muted">
+          <label className="flex min-w-[10rem] flex-1 items-center gap-2 text-sm text-muted sm:flex-none">
             To
-            <input type="date" name="to" defaultValue={to} aria-label="To date" className={field} />
+            <input type="date" name="to" defaultValue={to} aria-label="To date" className={`${field} min-w-0 flex-1`} />
           </label>
           <button type="submit" className="rounded-md border border-border px-4 py-2 text-sm hover:bg-border/60">
             Search
           </button>
           {filtered ? (
-            <Link href="/quotations" className="self-center text-sm text-muted hover:underline">
+            <Link href="/quotations" className="tap self-center text-sm text-muted hover:underline">
               Clear
             </Link>
           ) : null}
@@ -75,7 +75,7 @@ export default async function QuotationsPage({ searchParams }: PageProps<"/quota
         </p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-          <table className="w-full text-left text-sm">
+          <table className="stack w-full text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-4 py-2 font-medium">Number</th>
@@ -95,11 +95,11 @@ export default async function QuotationsPage({ searchParams }: PageProps<"/quota
                     </Link>
                     {q.revisionNo > 1 ? <span className="ml-1 text-xs font-normal text-muted">rev {q.revisionNo}</span> : null}
                   </td>
-                  <td className="px-4 py-3">{q.customerName}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{formatDate(q.quotationDate)}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{formatDate(q.validUntil)}</td>
-                  <td className="px-4 py-3 text-right whitespace-nowrap tabular-nums">{formatRupees(q.grandTotal)}</td>
-                  <td className="px-4 py-3">
+                  <td data-label="Customer" className="px-4 py-3">{q.customerName}</td>
+                  <td data-label="Date" className="px-4 py-3 whitespace-nowrap">{formatDate(q.quotationDate)}</td>
+                  <td data-label="Valid until" className="px-4 py-3 whitespace-nowrap">{formatDate(q.validUntil)}</td>
+                  <td data-label="Total" className="px-4 py-3 text-right whitespace-nowrap tabular-nums">{formatRupees(q.grandTotal)}</td>
+                  <td data-label="Status" className="px-4 py-3">
                     <StatusBadge status={q.displayStatus} />
                   </td>
                 </tr>

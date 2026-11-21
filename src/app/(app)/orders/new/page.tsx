@@ -17,7 +17,7 @@ export default async function NewOrderPage({ searchParams }: PageProps<"/orders/
 
   const header = (
     <div>
-      <Link href="/orders" className="text-sm text-muted hover:underline">
+      <Link href="/orders" className="tap text-sm text-muted hover:underline">
         ← Purchase orders
       </Link>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">Record customer PO</h1>

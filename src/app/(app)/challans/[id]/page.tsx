@@ -39,7 +39,7 @@ export default async function ChallanPage({ params }: PageProps<"/challans/[id]"
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-8">
       <div>
-        <Link href="/challans" className="text-sm text-muted hover:underline">
+        <Link href="/challans" className="tap text-sm text-muted hover:underline">
           ← Challans
         </Link>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
@@ -70,16 +70,21 @@ export default async function ChallanPage({ params }: PageProps<"/challans/[id]"
         </section>
       ) : null}
 
-      <section className="flex flex-wrap gap-2" aria-label="PDF">
-        <a href={`${pdf}?prices=hide`} target="_blank" rel="noreferrer" className={btn}>
-          PDF without prices
-        </a>
-        <a href={`${pdf}?prices=show`} target="_blank" rel="noreferrer" className={btn}>
-          PDF with prices
-        </a>
-        <a href={`${pdf}?prices=${c.showPrices ? "show" : "hide"}&download=1`} className={btn}>
-          Download
-        </a>
+      <section className="flex flex-col gap-2" aria-label="PDF">
+        <div className="flex flex-wrap gap-2">
+          <a href={`${pdf}?prices=hide`} target="_blank" rel="noreferrer" className={btn}>
+            View PDF without prices
+          </a>
+          <a href={`${pdf}?prices=show`} target="_blank" rel="noreferrer" className={btn}>
+            View PDF with prices
+          </a>
+          <a href={`${pdf}?prices=${c.showPrices ? "show" : "hide"}&download=1`} className={btn} download>
+            Download PDF
+          </a>
+        </div>
+        <p className="text-xs text-muted md:hidden" data-testid="pdf-phone-hint">
+          View opens the PDF in a new tab or window; close it to come back here. Download saves a copy to your device.
+        </p>
       </section>
 
       <section className="grid gap-6 sm:grid-cols-2" aria-label="Parties">
@@ -119,7 +124,7 @@ export default async function ChallanPage({ params }: PageProps<"/challans/[id]"
       <section className="flex flex-col gap-3" aria-label="Delivered items">
         <h2 className="text-lg font-medium">Delivered items</h2>
         <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-          <table className="w-full text-left text-sm">
+          <table className="stack w-full text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-3 py-2 font-medium">#</th>
@@ -132,13 +137,13 @@ export default async function ChallanPage({ params }: PageProps<"/challans/[id]"
             <tbody className="divide-y divide-border">
               {lines.map((l) => (
                 <tr key={l.id} data-testid={`challan-line-${l.lineNo}`}>
-                  <td className="px-3 py-2 text-muted">{l.lineNo}</td>
-                  <td className="px-3 py-2">{l.description}</td>
-                  <td className="px-3 py-2">{l.hsnCode}</td>
-                  <td className="px-3 py-2 text-right whitespace-nowrap font-medium tabular-nums">
+                  <td data-label="Item" className="px-3 py-2 text-muted">{l.lineNo}</td>
+                  <td data-label="Description" className="px-3 py-2">{l.description}</td>
+                  <td data-label="HSN" className="px-3 py-2">{l.hsnCode}</td>
+                  <td data-label="Quantity" className="px-3 py-2 text-right whitespace-nowrap font-medium tabular-nums">
                     {formatQuantity(l.quantity)} {UNIT_LABELS[l.unit]}
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums">
+                  <td data-label="Rate" className="px-3 py-2 text-right tabular-nums">
                     {formatInr(l.rate)}
                     {Number(l.discountPercent) > 0 ? <span className="block text-xs text-muted">{formatQuantity(l.discountPercent)}% off</span> : null}
                   </td>

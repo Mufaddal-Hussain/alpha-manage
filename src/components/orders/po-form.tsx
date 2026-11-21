@@ -93,7 +93,7 @@ export function PoForm({
           </p>
         </div>
         <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-          <table className="w-full text-left text-sm">
+          <table className="stack w-full text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-3 py-2 font-medium">#</th>
@@ -110,15 +110,15 @@ export function PoForm({
                 const error = errors[`qty:${l.id}`];
                 return (
                   <tr key={l.id}>
-                    <td className="px-3 py-2 text-muted">{l.lineNo}</td>
-                    <td className="px-3 py-2">
+                    <td data-label="Item" className="px-3 py-2 text-muted">{l.lineNo}</td>
+                    <td data-label="Description" className="px-3 py-2">
                       {l.description}
                       <span className="block text-xs text-muted">HSN {l.hsnCode}</span>
                     </td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
+                    <td data-label="Quoted" className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
                       {formatQuantity(l.quantity)} {UNIT_LABELS[l.unit]}
                     </td>
-                    <td className="px-3 py-2">
+                    <td data-label="Ordered" data-block className="px-3 py-2">
                       <div className="flex items-center gap-2">
                         <input
                           name={`qty:${l.id}`}
@@ -136,7 +136,7 @@ export function PoForm({
                       </p>
                       {error ? <p className="text-xs text-danger">{error}</p> : null}
                     </td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
+                    <td data-label="Rate" className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
                       {formatInr(l.rate)}
                       {Number(l.discountPercent) > 0 ? <span className="block text-xs text-muted">{formatQuantity(l.discountPercent)}% off</span> : null}
                     </td>
@@ -149,7 +149,7 @@ export function PoForm({
         <p className="text-xs text-muted">Charges on the quotation (transport and the like) are not ordered items and do not appear here.</p>
       </section>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="action-bar flex flex-wrap items-center gap-3">
         <button
           type="submit"
           disabled={pending}
@@ -157,7 +157,7 @@ export function PoForm({
         >
           {pending ? "Recording…" : "Record PO"}
         </button>
-        <Link href={`/quotations/${quotationId}`} className="text-sm text-muted hover:underline">
+        <Link href={`/quotations/${quotationId}`} className="tap text-sm text-muted hover:underline">
           Cancel
         </Link>
       </div>

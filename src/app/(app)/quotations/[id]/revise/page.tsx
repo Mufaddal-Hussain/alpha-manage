@@ -24,7 +24,7 @@ export default async function ReviseQuotationPage({ params }: PageProps<"/quotat
   if (quotation.status === "approved") redirect(`/quotations/${id}`);
 
   const back = (
-    <Link href={`/quotations/${id}`} className="text-sm text-muted hover:underline">
+    <Link href={`/quotations/${id}`} className="tap text-sm text-muted hover:underline">
       ← {quotation.number ?? "Draft quotation"}
     </Link>
   );

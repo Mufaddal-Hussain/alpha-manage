@@ -9,7 +9,7 @@ export default async function NewProductPage() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href="/catalog/products" className="text-sm text-muted hover:underline">
+        <Link href="/catalog/products" className="tap text-sm text-muted hover:underline">
           ← Products
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">New product</h1>

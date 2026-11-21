@@ -34,6 +34,7 @@ Each scenario maps to a user story and success criteria in [spec.md](spec.md).
 8. **Partial deliveries (US4, SC-005, SC-006)** — PO of 100 boxes: challan 1 for 60 (PO shows 60 delivered / 40 pending, partially delivered), challan 2 for 40 (delivered), a challan for 1 more is blocked, owner override requires a reason. Cancel challan 1: pending returns to 60 and its number is not reused.
 9. **Challan PDF (FR-029)** — PDF matches the Tally delivery-note layout (consignee and buyer separate, vehicle, driver, receiver block); prices hidden and shown variants both render.
 10. **Security (SC-007)** — signed-out requests to every page, `/api/documents/...` and `/api/files/...` are redirected or return 401.
+11. **Phone (Phase 9)** — `npx playwright test --project=iphone-390 --project=iphone-375 --project=iphone-430`: every screen has no sideways scroll, targets of at least 44 px and field text of at least 16 px; the main flows work at 390 px. Done on this machine (Chromium with iPhone emulation). **Still to do on a real iPhone:** Safari → Share → Add to Home Screen, open standalone, check the notch and home bar, View and Download of a PDF.
 
 ## Deploy check (Vercel)
 

@@ -31,7 +31,7 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-8">
       <div>
-        <Link href="/orders" className="text-sm text-muted hover:underline">
+        <Link href="/orders" className="tap text-sm text-muted hover:underline">
           ← Purchase orders
         </Link>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
@@ -93,7 +93,7 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
       <section className="flex flex-col gap-3" aria-label="Ordered items">
         <h2 className="text-lg font-medium">Ordered items</h2>
         <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-          <table className="w-full text-left text-sm">
+          <table className="stack w-full text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-3 py-2 font-medium">#</th>
@@ -112,26 +112,26 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
                 const delta = l.quantityQuoted === null ? null : Number(l.quantityOrdered) - Number(l.quantityQuoted);
                 return (
                   <tr key={l.id} data-testid={`po-line-${l.lineNo}`}>
-                    <td className="px-3 py-2 text-muted">{l.lineNo}</td>
-                    <td className="px-3 py-2">{l.description}</td>
-                    <td className="px-3 py-2">{l.hsnCode}</td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
+                    <td data-label="Item" className="px-3 py-2 text-muted">{l.lineNo}</td>
+                    <td data-label="Description" className="px-3 py-2">{l.description}</td>
+                    <td data-label="HSN" className="px-3 py-2">{l.hsnCode}</td>
+                    <td data-label="Quoted" className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
                       {l.quantityQuoted === null ? "–" : `${formatQuantity(l.quantityQuoted)} ${UNIT_LABELS[l.unit]}`}
                     </td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap font-medium tabular-nums">
+                    <td data-label="Ordered" className="px-3 py-2 text-right whitespace-nowrap font-medium tabular-nums">
                       {formatQuantity(l.quantityOrdered)} {UNIT_LABELS[l.unit]}
                     </td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums" data-testid={`po-difference-${l.lineNo}`}>
+                    <td data-label="Difference" className="px-3 py-2 text-right whitespace-nowrap tabular-nums" data-testid={`po-difference-${l.lineNo}`}>
                       {delta === null ? "not on quotation" : delta === 0 ? "same" : `${delta > 0 ? "+" : "−"}${formatQuantity(Math.abs(delta))}`}
                     </td>
-                    <td className="px-3 py-2 text-right tabular-nums">
+                    <td data-label="Rate" className="px-3 py-2 text-right tabular-nums">
                       {formatInr(l.rate)}
                       {Number(l.discountPercent) > 0 ? <span className="block text-xs text-muted">{formatQuantity(l.discountPercent)}% off</span> : null}
                     </td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums" data-testid={`po-delivered-${l.lineNo}`}>
+                    <td data-label="Delivered" className="px-3 py-2 text-right whitespace-nowrap tabular-nums" data-testid={`po-delivered-${l.lineNo}`}>
                       {formatQuantity(progress.get(l.id)?.delivered ?? 0)} {UNIT_LABELS[l.unit]}
                     </td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap font-medium tabular-nums" data-testid={`po-pending-${l.lineNo}`}>
+                    <td data-label="Pending" className="px-3 py-2 text-right whitespace-nowrap font-medium tabular-nums" data-testid={`po-pending-${l.lineNo}`}>
                       {formatQuantity(progress.get(l.id)?.pending ?? 0)} {UNIT_LABELS[l.unit]}
                       {Number(progress.get(l.id)?.excess ?? 0) > 0 ? (
                         <span className="block text-xs font-normal text-accent">{formatQuantity(progress.get(l.id)!.excess)} over-delivered (owner override)</span>
@@ -142,17 +142,17 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
               })}
               {notOrdered.map((l) => (
                 <tr key={l.id} className="text-muted" data-testid="po-not-ordered">
-                  <td className="px-3 py-2">–</td>
-                  <td className="px-3 py-2 line-through">{l.description}</td>
-                  <td className="px-3 py-2">{l.hsnCode}</td>
-                  <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
+                  <td data-label="Item" className="px-3 py-2">–</td>
+                  <td data-label="Description" className="px-3 py-2 line-through">{l.description}</td>
+                  <td data-label="HSN" className="px-3 py-2">{l.hsnCode}</td>
+                  <td data-label="Quoted" className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
                     {formatQuantity(l.quantity)} {UNIT_LABELS[l.unit]}
                   </td>
-                  <td className="px-3 py-2 text-right">0</td>
-                  <td className="px-3 py-2 text-right whitespace-nowrap">not ordered</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{formatInr(l.rate)}</td>
-                  <td className="px-3 py-2 text-right">–</td>
-                  <td className="px-3 py-2 text-right">–</td>
+                  <td data-label="Ordered" className="px-3 py-2 text-right">0</td>
+                  <td data-label="Difference" className="px-3 py-2 text-right whitespace-nowrap">not ordered</td>
+                  <td data-label="Rate" className="px-3 py-2 text-right tabular-nums">{formatInr(l.rate)}</td>
+                  <td data-label="Delivered" className="px-3 py-2 text-right">–</td>
+                  <td data-label="Pending" className="px-3 py-2 text-right">–</td>
                 </tr>
               ))}
             </tbody>

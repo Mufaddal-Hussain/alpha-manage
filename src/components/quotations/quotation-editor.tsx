@@ -679,7 +679,7 @@ export function QuotationEditor({ settings, chargeTypes, initial }: { settings: 
         )}
       </section>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="action-bar flex flex-wrap gap-3">
         <button type="submit" disabled={pending} className={`${btn} px-4 py-2`}>
           {pending ? "Working…" : "Save draft"}
         </button>

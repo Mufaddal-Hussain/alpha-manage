@@ -54,7 +54,7 @@ export default async function ImportReviewPage({ params }: PageProps<"/catalog/i
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
       <div>
-        <Link href="/catalog/import/new" className="text-sm text-muted hover:underline">
+        <Link href="/catalog/import/new" className="tap text-sm text-muted hover:underline">
           ← Imports
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{job.sourceName}</h1>
@@ -127,7 +127,7 @@ export default async function ImportReviewPage({ params }: PageProps<"/catalog/i
           {reviewing ? <ApproveForm jobId={job.id} included={included} discontinuing={discontinuing} /> : null}
 
           <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-            <table className="w-full text-left text-sm">
+            <table className="stack w-full text-left text-sm">
               <thead className="border-b border-border text-xs uppercase text-muted">
                 <tr>
                   <th className="px-3 py-2">Row</th>
@@ -145,12 +145,12 @@ export default async function ImportReviewPage({ params }: PageProps<"/catalog/i
                   const counts = (["new", "changed", "unchanged"] as const).map((k) => [k, r.payload.designs.filter((d) => d.kind === k).length] as const).filter(([, n]) => n > 0);
                   return (
                     <tr key={r.id} data-kind={r.kind} className={r.accepted || r.kind === "error" || !reviewing ? "" : "opacity-60"}>
-                      <td className="px-3 py-2 text-muted">{r.rowNumber}</td>
-                      <td className="px-3 py-2">
+                      <td data-label="Row" className="px-3 py-2 text-muted">{r.rowNumber}</td>
+                      <td data-label="Result" className="px-3 py-2">
                         <Badge kind={r.kind} />
                         {r.payload.brandIsNew ? <p className="mt-1 text-xs text-muted">New brand, created on approval</p> : null}
                       </td>
-                      <td className="px-3 py-2">
+                      <td data-label="Brand and group" className="px-3 py-2">
                         <p className="font-medium">{g ? g.brand : raw.brand || "—"}</p>
                         <p className="text-muted">
                           {g
@@ -163,7 +163,7 @@ export default async function ImportReviewPage({ params }: PageProps<"/catalog/i
                           </p>
                         ) : null}
                       </td>
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td data-label="Rates (ex-GST)" className="px-3 py-2 whitespace-nowrap">
                         {g ? (
                           <>
                             <p>{inr.format(Number(g.ratePerBox))} / box</p>
@@ -175,7 +175,7 @@ export default async function ImportReviewPage({ params }: PageProps<"/catalog/i
                           </p>
                         )}
                       </td>
-                      <td className="px-3 py-2">
+                      <td data-label="Designs" className="px-3 py-2">
                         {g ? (
                           <details>
                             <summary className="cursor-pointer">
@@ -211,7 +211,7 @@ export default async function ImportReviewPage({ params }: PageProps<"/catalog/i
                         ) : null}
                       </td>
                       {reviewing ? (
-                        <td className="px-3 py-2">
+                        <td data-label="Include" className="px-3 py-2">
                           {r.kind === "error" ? <span className="text-xs text-muted">Fix first</span> : <DecisionForm rowId={r.id} accepted={r.accepted} onLabel="Include" offLabel="Skip" />}
                           {r.kind !== "error" ? <p className="mt-1 text-xs text-muted">{r.accepted ? "Included" : "Skipped"}</p> : null}
                         </td>

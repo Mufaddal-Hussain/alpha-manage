@@ -45,3 +45,123 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
+
+/*
+ * Phone layout (T088, T089). Everything below is unlayered on purpose: unlayered rules beat Tailwind's utility layer,
+ * so these phone rules win over the sizes in the component classes without touching each of them. The breakpoint is
+ * Tailwind's md (768px), where the app switches from the drawer to the sidebar. Desktop widths are not affected.
+ */
+
+/* Safe areas (T089): with viewport-fit=cover the page runs under the notch, the home bar and, in landscape, the rounded
+   sides. The shell pads itself with env(safe-area-inset-*) through Tailwind utilities (shell-nav.tsx, (app)/layout.tsx). */
+
+@media (max-width: 767.98px) {
+  /* Touch targets of at least 44px (links that sit inside a sentence keep following the text). */
+  button,
+  summary,
+  select,
+  textarea,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  a {
+    min-height: 44px;
+  }
+  /* Icon-only buttons (the move and remove buttons on quotation lines) are 44px wide as well as tall. */
+  button {
+    min-width: 44px;
+  }
+  summary {
+    padding-block: 0.65rem;
+  }
+  a:where(.tap) {
+    display: inline-flex;
+    align-items: center;
+  }
+  label:has(> input[type="checkbox"], > input[type="radio"]) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+  }
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  /* 16px text in fields: below that iOS Safari zooms the whole page when a field gets focus. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Tables become one card per row. Each cell carries data-label (its column name); a cell without one is the
+     card's heading (the number or name that opens the record) and data-block puts the label above the value. */
+  table.stack,
+  table.stack tbody,
+  table.stack tr,
+  table.stack td {
+    display: block;
+  }
+  table.stack thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  table.stack tr {
+    padding: 0.5rem 1rem;
+  }
+  table.stack td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.25rem 0;
+    text-align: right;
+    white-space: normal;
+  }
+  table.stack td[data-label]::before {
+    content: attr(data-label);
+    flex: none;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+  }
+  table.stack td:not([data-label]) {
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 1rem;
+  }
+  table.stack td:not([data-label]) a {
+    display: inline-flex;
+    align-items: center;
+    min-width: 44px;
+  }
+  table.stack td[data-block] {
+    display: block;
+    text-align: left;
+  }
+  table.stack td[data-block]::before {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  table.stack tbody > tr + tr {
+    border-top: 1px solid var(--border);
+  }
+
+  /* Sticky action bar: the Save / Issue buttons of long forms stay within reach above the home bar. */
+  .action-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    margin-inline: -1rem;
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+}

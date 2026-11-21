@@ -12,7 +12,7 @@ export default async function NewQuotationPage() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <div>
-        <Link href="/quotations" className="text-sm text-muted hover:underline">
+        <Link href="/quotations" className="tap text-sm text-muted hover:underline">
           ← Quotations
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">New quotation</h1>

@@ -23,7 +23,7 @@ export default async function PriceListPage({ params }: PageProps<"/catalog/pric
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6">
       <div>
-        <Link href="/catalog/price-lists" className="text-sm text-muted hover:underline">
+        <Link href="/catalog/price-lists" className="tap text-sm text-muted hover:underline">
           ← Price lists
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">

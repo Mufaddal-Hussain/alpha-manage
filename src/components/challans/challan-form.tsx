@@ -76,7 +76,7 @@ export function ChallanForm({
           </p>
         </div>
         <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-          <table className="w-full text-left text-sm">
+          <table className="stack w-full text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-3 py-2 font-medium">#</th>
@@ -95,15 +95,15 @@ export function ChallanForm({
                 const label = UNIT_LABELS[l.unit];
                 return (
                   <tr key={l.id}>
-                    <td className="px-3 py-2 text-muted">{l.lineNo}</td>
-                    <td className="px-3 py-2">
+                    <td data-label="Item" className="px-3 py-2 text-muted">{l.lineNo}</td>
+                    <td data-label="Description" className="px-3 py-2">
                       {l.description}
                       <span className="block text-xs text-muted">HSN {l.hsnCode}</span>
                     </td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums">{formatQuantity(l.ordered)} {label}</td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums">{formatQuantity(l.delivered)} {label}</td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap font-medium tabular-nums">{formatQuantity(l.pending)} {label}</td>
-                    <td className="px-3 py-2">
+                    <td data-label="Ordered" className="px-3 py-2 text-right whitespace-nowrap tabular-nums">{formatQuantity(l.ordered)} {label}</td>
+                    <td data-label="Delivered" className="px-3 py-2 text-right whitespace-nowrap tabular-nums">{formatQuantity(l.delivered)} {label}</td>
+                    <td data-label="Pending" className="px-3 py-2 text-right whitespace-nowrap font-medium tabular-nums">{formatQuantity(l.pending)} {label}</td>
+                    <td data-label="This challan" data-block className="px-3 py-2">
                       <div className="flex items-center gap-2">
                         <input
                           name={`qty:${l.id}`}
@@ -187,7 +187,7 @@ export function ChallanForm({
         </span>
       </label>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="action-bar flex flex-wrap items-center gap-3">
         <button
           type="submit"
           disabled={pending}
@@ -195,7 +195,7 @@ export function ChallanForm({
         >
           {pending ? "Issuing…" : "Issue challan"}
         </button>
-        <Link href={`/orders/${purchaseOrderId}`} className="text-sm text-muted hover:underline">
+        <Link href={`/orders/${purchaseOrderId}`} className="tap text-sm text-muted hover:underline">
           Cancel
         </Link>
       </div>

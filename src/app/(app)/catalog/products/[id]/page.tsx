@@ -22,7 +22,7 @@ export default async function ProductPage({ params }: PageProps<"/catalog/produc
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href="/catalog/products" className="text-sm text-muted hover:underline">
+        <Link href="/catalog/products" className="tap text-sm text-muted hover:underline">
           ← Products
         </Link>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-3">

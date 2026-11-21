@@ -24,7 +24,22 @@ export default defineConfig({
     baseURL,
     trace: "on-first-retry",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    // Desktop: every spec except the phone ones.
+    { name: "chromium", testIgnore: /mobile.*\.spec\.ts/, use: { ...devices["Desktop Chrome"] } },
+    // Phones (T087, T092): iPhone-sized viewports, touch, 3x pixels and the iPhone user agent. The engine is Chromium
+    // unless PHONE_BROWSER=webkit is set (run `npx playwright install webkit` first), because WebKit is only installed
+    // on request. 390 x 844 is the main size; 375 (iPhone SE/mini) and 430 (Plus/Pro Max) are spot checks.
+    ...([375, 390, 430] as const).map((width) => ({
+      name: `iphone-${width}`,
+      testMatch: width === 390 ? /mobile.*\.spec\.ts/ : /mobile-audit\.spec\.ts/,
+      use: {
+        ...devices["iPhone 14"],
+        browserName: (process.env.PHONE_BROWSER === "webkit" ? "webkit" : "chromium") as "webkit" | "chromium",
+        viewport: { width, height: width === 375 ? 667 : width === 430 ? 932 : 844 },
+      },
+    })),
+  ],
   // Starts the dev server (on the test database) unless PLAYWRIGHT_BASE_URL points at one that is already running.
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined

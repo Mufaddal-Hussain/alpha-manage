@@ -18,7 +18,7 @@ export default async function NewChallanPage({ searchParams }: PageProps<"/chall
 
   const header = (
     <div>
-      <Link href="/challans" className="text-sm text-muted hover:underline">
+      <Link href="/challans" className="tap text-sm text-muted hover:underline">
         ← Challans
       </Link>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">New delivery challan</h1>

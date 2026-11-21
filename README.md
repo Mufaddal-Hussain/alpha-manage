@@ -51,6 +51,18 @@ Set these in `.env.local` locally and in the Vercel project (Production and Prev
 
 Integration tests (`tests/integration`) use `TEST_DATABASE_URL`, a separate database or Neon branch that is never the main one (they apply migrations to it and insert/delete rows; the helper refuses to run if it matches `DATABASE_URL`). Without it they are skipped with a warning. Keep `DATABASE_URL` on a development branch, not production.
 
+## Install on iPhone
+
+alpha-Manage works at phone width and can be saved to the home screen like an app:
+
+1. Open the site in **Safari** on the iPhone and sign in once.
+2. Tap **Share** → **Add to Home Screen** → **Add**.
+3. Open it from the new icon: it runs full screen without Safari's bars. Use **Menu** (top right) to move around.
+
+In the app, **View PDF** opens the PDF in its own tab or window (close it to come back) and **Download PDF** saves a copy to the phone. The icon is a placeholder mark: replace the files in `public/icons/` (or edit `scripts/generate-icons.mjs` and run `node scripts/generate-icons.mjs`) once there is a logo. The `STORAGE_DRIVER` setting is a production setting handled with the Vercel deployment (T083), not part of this.
+
+Phone checks: `npx playwright test --project=iphone-390 --project=iphone-375 --project=iphone-430` (also part of `npm run test:e2e`); `PHONE_SHOTS=1` saves screenshots to `docs/phone/`. See [docs/phone/audit.md](docs/phone/audit.md).
+
 ## Brand images (supplied by the owner)
 
 The PDF layouts show the company logo and a strip of brand logos (see `specs/001-quotation-delivery-challan/contracts/document-layouts.md`). The images are not in the repository: the owner supplies them. Put the originals in `public/brand/` using these names:

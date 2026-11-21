@@ -49,19 +49,19 @@ export default async function ChallansPage({ searchParams }: PageProps<"/challan
           <option value="cancelled">Cancelled</option>
         </select>
         <div className="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-6">
-          <label className="flex items-center gap-2 text-sm text-muted">
+          <label className="flex min-w-[10rem] flex-1 items-center gap-2 text-sm text-muted sm:flex-none">
             From
-            <input type="date" name="from" defaultValue={from} aria-label="From date" className={field} />
+            <input type="date" name="from" defaultValue={from} aria-label="From date" className={`${field} min-w-0 flex-1`} />
           </label>
-          <label className="flex items-center gap-2 text-sm text-muted">
+          <label className="flex min-w-[10rem] flex-1 items-center gap-2 text-sm text-muted sm:flex-none">
             To
-            <input type="date" name="to" defaultValue={to} aria-label="To date" className={field} />
+            <input type="date" name="to" defaultValue={to} aria-label="To date" className={`${field} min-w-0 flex-1`} />
           </label>
           <button type="submit" className="rounded-md border border-border px-4 py-2 text-sm hover:bg-border/60">
             Search
           </button>
           {filtered ? (
-            <Link href="/challans" className="self-center text-sm text-muted hover:underline">
+            <Link href="/challans" className="tap self-center text-sm text-muted hover:underline">
               Clear
             </Link>
           ) : null}
@@ -74,7 +74,7 @@ export default async function ChallansPage({ searchParams }: PageProps<"/challan
         </p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-          <table className="w-full text-left text-sm">
+          <table className="stack w-full text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-4 py-2 font-medium">Challan</th>
@@ -93,15 +93,15 @@ export default async function ChallansPage({ searchParams }: PageProps<"/challan
                       {c.number}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">{formatDate(c.challanDate)}</td>
-                  <td className="px-4 py-3">{c.customerName}</td>
-                  <td className="px-4 py-3">
+                  <td data-label="Date" className="px-4 py-3 whitespace-nowrap">{formatDate(c.challanDate)}</td>
+                  <td data-label="Customer" className="px-4 py-3">{c.customerName}</td>
+                  <td data-label="Customer PO" className="px-4 py-3">
                     <Link href={`/orders/${c.purchaseOrderId}`} className="hover:underline">
                       {c.customerPoNumber}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">{c.vehicleNo || "–"}</td>
-                  <td className="px-4 py-3">
+                  <td data-label="Vehicle" className="px-4 py-3 whitespace-nowrap">{c.vehicleNo || "–"}</td>
+                  <td data-label="Status" className="px-4 py-3">
                     <ChallanStatusBadge status={c.status} />
                   </td>
                 </tr>

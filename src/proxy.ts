@@ -23,6 +23,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // API routes answer 401/403 themselves; skip Next internals and public brand images.
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|brand/).*)"],
+  // API routes answer 401/403 themselves; skip Next internals, public brand images, and the manifest and icons, which
+  // the browser fetches without a session when a page is saved to the home screen.
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|manifest.webmanifest|icons/|brand/).*)"],
 };

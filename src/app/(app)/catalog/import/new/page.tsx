@@ -13,7 +13,7 @@ export default async function NewImportPage() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href="/catalog/brands" className="text-sm text-muted hover:underline">
+        <Link href="/catalog/brands" className="tap text-sm text-muted hover:underline">
           ← Brands
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">Import a price list</h1>
@@ -22,7 +22,7 @@ export default async function NewImportPage() {
           You review the result before anything is saved.
         </p>
         <p className="mt-3">
-          <a href="/api/imports/template" className="text-sm font-medium text-accent hover:underline">
+          <a href="/api/imports/template" className="tap text-sm font-medium text-accent hover:underline">
             Download the template (.xlsx)
           </a>
         </p>

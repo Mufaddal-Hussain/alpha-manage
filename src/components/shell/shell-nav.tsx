@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
 import type { NavItem } from "./nav-items";
@@ -27,7 +27,7 @@ function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => v
                 href={item.href}
                 onClick={onNavigate}
                 aria-current={isActive(pathname, item.href) ? "page" : undefined}
-                className="rounded-md px-3 py-2 text-sm hover:bg-border/60 aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground"
+                className="flex items-center rounded-md px-3 py-2 text-sm hover:bg-border/60 aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground"
               >
                 {item.label}
               </Link>
@@ -55,9 +55,31 @@ function SignOutButton() {
   );
 }
 
-/** Sidebar on wide screens; a header with a slide-down menu on phones. */
+/** Sidebar on wide screens; a sticky header with a slide-in drawer on phones. */
 export function ShellNav({ items, userName, roleLabel }: { items: NavItem[]; userName: string; roleLabel: string }) {
   const [open, setOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
+
+  // While the drawer is open: Escape closes it, the page behind does not scroll, and focus starts on its Close button
+  // and goes back to the Menu button afterwards.
+  useEffect(() => {
+    if (!open) return;
+    const button = menuButton.current;
+    closeButton.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previous;
+      button?.focus();
+    };
+  }, [open]);
+
   return (
     <>
       <aside className="hidden w-60 shrink-0 flex-col gap-6 border-r border-border bg-surface p-4 md:flex">
@@ -70,32 +92,49 @@ export function ShellNav({ items, userName, roleLabel }: { items: NavItem[]; use
         </div>
       </aside>
 
-      <header className="border-b border-border bg-surface md:hidden">
-        <div className="flex items-center justify-between px-4 py-3">
+      <header className="sticky top-0 z-30 border-b border-border bg-surface pt-[env(safe-area-inset-top)] pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] md:hidden">
+        <div className="flex items-center justify-between px-4 py-1">
           <p className="font-semibold tracking-tight">alpha-Manage</p>
           <button
+            ref={menuButton}
             type="button"
             aria-expanded={open}
             aria-controls="mobile-menu"
-            onClick={() => setOpen((v) => !v)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm"
+            onClick={() => setOpen(true)}
+            className="rounded-md border border-border px-4 text-sm"
           >
-            {open ? "Close" : "Menu"}
+            Menu
           </button>
         </div>
-        {open ? (
-          <div id="mobile-menu" className="flex flex-col gap-4 border-t border-border px-4 py-4">
+      </header>
+
+      {open ? (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <button type="button" aria-label="Close menu" tabIndex={-1} onClick={() => setOpen(false)} className="absolute inset-0 h-full w-full bg-black/40" />
+          <div
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            className="absolute inset-y-0 right-0 flex w-[min(20rem,85vw)] flex-col gap-4 overflow-y-auto border-l border-border bg-surface pt-[env(safe-area-inset-top)] pr-[max(1rem,env(safe-area-inset-right))] pb-[max(1rem,env(safe-area-inset-bottom))] pl-4 shadow-xl"
+          >
+            <div className="flex items-center justify-between pt-1">
+              <p className="font-semibold tracking-tight">alpha-Manage</p>
+              <button ref={closeButton} type="button" onClick={() => setOpen(false)} className="rounded-md border border-border px-4 text-sm">
+                Close
+              </button>
+            </div>
             <NavList items={items} onNavigate={() => setOpen(false)} />
-            <div className="flex items-center justify-between border-t border-border pt-4">
-              <div>
-                <p className="text-sm font-medium">{userName}</p>
+            <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-4">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">{userName}</p>
                 <p className="text-xs capitalize text-muted">{roleLabel}</p>
               </div>
               <SignOutButton />
             </div>
           </div>
-        ) : null}
-      </header>
+        </div>
+      ) : null}
     </>
   );
 }

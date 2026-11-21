@@ -39,7 +39,7 @@ export default async function QuotationPage({ params, searchParams }: PageProps<
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-8">
       <div>
-        <Link href="/quotations" className="text-sm text-muted hover:underline">
+        <Link href="/quotations" className="tap text-sm text-muted hover:underline">
           ← Quotations
         </Link>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
@@ -125,14 +125,17 @@ export default async function QuotationPage({ params, searchParams }: PageProps<
           <a className={btn} href={`${pdfBase}${previewSuffix}`} target="_blank" rel="noreferrer">
             View PDF ({current.layout === "estimate" ? "estimate" : "GST quotation"})
           </a>
-          <a className={btn} href={`${pdfBase}&download=1${previewSuffix}`}>
+          <a className={btn} href={`${pdfBase}&download=1${previewSuffix}`} download>
             Download PDF
           </a>
-          <a className={btn} href={`${pdfBase}&layout=${current.layout === "estimate" ? "gst_quotation" : "estimate"}&download=1${previewSuffix}`}>
+          <a className={btn} href={`${pdfBase}&layout=${current.layout === "estimate" ? "gst_quotation" : "estimate"}&download=1${previewSuffix}`} download>
             Download as {current.layout === "estimate" ? "GST quotation" : "estimate"}
           </a>
           {issued ? <CopyLinkButton path={`${pdfBase}`} /> : null}
         </div>
+        <p className="text-xs text-muted md:hidden" data-testid="pdf-phone-hint">
+          View opens the PDF in a new tab or window; close it to come back here. Download saves a copy to your device.
+        </p>
         {!issued ? <p className="text-xs text-muted">This is a draft: the PDF is watermarked and has no number until the quotation is issued.</p> : null}
         {issued ? <p className="text-xs text-muted">The PDF link only opens for signed-in staff; download the PDF to send it to the customer.</p> : null}
       </section>
@@ -161,7 +164,7 @@ export default async function QuotationPage({ params, searchParams }: PageProps<
       <section className="flex flex-col gap-3" aria-label="Items">
         <h2 className="text-lg font-medium">Items</h2>
         <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-          <table className="w-full text-left text-sm">
+          <table className="stack w-full text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-3 py-2 font-medium">#</th>
@@ -178,10 +181,10 @@ export default async function QuotationPage({ params, searchParams }: PageProps<
             <tbody className="divide-y divide-border">
               {lines.map((l) => (
                 <tr key={l.id}>
-                  <td className="px-3 py-2 text-muted">{l.lineNo}</td>
-                  <td className="px-3 py-2">{l.description}</td>
-                  <td className="px-3 py-2">{l.hsnCode}</td>
-                  <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
+                  <td data-label="Item" className="px-3 py-2 text-muted">{l.lineNo}</td>
+                  <td data-label="Description" className="px-3 py-2">{l.description}</td>
+                  <td data-label="HSN/SAC" className="px-3 py-2">{l.hsnCode}</td>
+                  <td data-label="Qty" className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
                     {l.kind === "charge" ? "–" : `${formatQuantity(l.quantity)} ${UNIT_LABELS[l.unit]}`}
                     {l.kind === "product" && l.quantityAlt && l.unit !== "piece" ? (
                       <span className="block text-xs text-muted">
@@ -189,11 +192,11 @@ export default async function QuotationPage({ params, searchParams }: PageProps<
                       </span>
                     ) : null}
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums">{formatInr(l.rate)}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{l.kind === "charge" ? "" : formatQuantity(l.discountPercent)}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{formatInr(l.taxableValue)}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{formatQuantity(l.gstRate)}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{formatInr(l.lineTotal)}</td>
+                  <td data-label="Rate" className="px-3 py-2 text-right tabular-nums">{formatInr(l.rate)}</td>
+                  <td data-label="Disc %" className="px-3 py-2 text-right tabular-nums">{l.kind === "charge" ? "" : formatQuantity(l.discountPercent)}</td>
+                  <td data-label="Taxable" className="px-3 py-2 text-right tabular-nums">{formatInr(l.taxableValue)}</td>
+                  <td data-label="GST %" className="px-3 py-2 text-right tabular-nums">{formatQuantity(l.gstRate)}</td>
+                  <td data-label="Amount" className="px-3 py-2 text-right tabular-nums">{formatInr(l.lineTotal)}</td>
                 </tr>
               ))}
             </tbody>

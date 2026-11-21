@@ -53,19 +53,19 @@ export default async function OrdersPage({ searchParams }: PageProps<"/orders">)
         </select>
         <input type="search" name="quotation" defaultValue={quotationNumber} placeholder="Quotation no." aria-label="Quotation number" className={field} />
         <div className="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-6">
-          <label className="flex items-center gap-2 text-sm text-muted">
+          <label className="flex min-w-[10rem] flex-1 items-center gap-2 text-sm text-muted sm:flex-none">
             From
-            <input type="date" name="from" defaultValue={from} aria-label="From date" className={field} />
+            <input type="date" name="from" defaultValue={from} aria-label="From date" className={`${field} min-w-0 flex-1`} />
           </label>
-          <label className="flex items-center gap-2 text-sm text-muted">
+          <label className="flex min-w-[10rem] flex-1 items-center gap-2 text-sm text-muted sm:flex-none">
             To
-            <input type="date" name="to" defaultValue={to} aria-label="To date" className={field} />
+            <input type="date" name="to" defaultValue={to} aria-label="To date" className={`${field} min-w-0 flex-1`} />
           </label>
           <button type="submit" className="rounded-md border border-border px-4 py-2 text-sm hover:bg-border/60">
             Search
           </button>
           {filtered ? (
-            <Link href="/orders" className="self-center text-sm text-muted hover:underline">
+            <Link href="/orders" className="tap self-center text-sm text-muted hover:underline">
               Clear
             </Link>
           ) : null}
@@ -78,7 +78,7 @@ export default async function OrdersPage({ searchParams }: PageProps<"/orders">)
         </p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-          <table className="w-full text-left text-sm">
+          <table className="stack w-full text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-4 py-2 font-medium">Customer PO</th>
@@ -97,15 +97,15 @@ export default async function OrdersPage({ searchParams }: PageProps<"/orders">)
                       {o.customerPoNumber}
                     </Link>
                   </td>
-                  <td className="px-4 py-3">{o.customerName}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{formatDate(o.poDate)}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">
+                  <td data-label="Customer" className="px-4 py-3">{o.customerName}</td>
+                  <td data-label="PO date" className="px-4 py-3 whitespace-nowrap">{formatDate(o.poDate)}</td>
+                  <td data-label="Quotation" className="px-4 py-3 whitespace-nowrap">
                     <Link href={`/quotations/${o.quotationId}`} className="hover:underline">
                       {o.quotationNumber}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-right whitespace-nowrap tabular-nums">{Number(o.advanceReceived) > 0 ? formatRupees(o.advanceReceived) : "–"}</td>
-                  <td className="px-4 py-3">
+                  <td data-label="Advance" className="px-4 py-3 text-right whitespace-nowrap tabular-nums">{Number(o.advanceReceived) > 0 ? formatRupees(o.advanceReceived) : "–"}</td>
+                  <td data-label="Status" className="px-4 py-3">
                     <PoStatusBadge status={o.status} />
                   </td>
                 </tr>
