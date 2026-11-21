@@ -11,7 +11,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx src/db/seed.ts",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "db:reset-owner-password": "tsx src/db/reset-owner-password.ts"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",
