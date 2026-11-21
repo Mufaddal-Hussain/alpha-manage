@@ -159,8 +159,9 @@ test("approve a quotation, record a PO with a file and one reduced quantity, see
   await expect(page.locator('[data-testid="po-difference-2"]:visible')).toHaveText("same");
   // 3 x 580 + 10 x 1,080 = 12,540 taxable; 18% GST = 2,257.20
   await expect(page.locator('[data-testid="ordered-value"]:visible')).toHaveText("₹ 14,797.20");
-  // Delivery progress is a placeholder until challans exist.
-  await expect(page.locator('[data-testid="po-delivery-1"]:visible')).toHaveText("Not tracked yet");
+  // Nothing delivered yet: everything ordered is pending (the challan e2e covers deliveries).
+  await expect(page.locator('[data-testid="po-delivered-1"]:visible')).toHaveText("0 Box");
+  await expect(page.locator('[data-testid="po-pending-1"]:visible')).toHaveText("3 Box");
   await expect(page.getByText("Deliver after the 5th")).toBeVisible();
 
   // --- The attachment opens through /api/files/[id] ---------------------------------

@@ -9,11 +9,11 @@ export interface NavItem {
   group?: string;
 }
 
-// Later phases append their screens here (challans).
 export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/", label: "Dashboard", roles: ["sales"] },
   { href: "/quotations", label: "Quotations", roles: ["sales"] },
   { href: "/orders", label: "Purchase orders", roles: ["sales"] },
+  { href: "/challans", label: "Challans", roles: ["sales"] },
   { href: "/customers", label: "Customers", roles: ["sales"] },
   { href: "/catalog/products", label: "Products", roles: ["sales"], group: "Catalog" },
   { href: "/catalog/price-lists", label: "Price lists", roles: ["sales"], group: "Catalog" },

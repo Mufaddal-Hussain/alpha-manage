@@ -49,9 +49,10 @@ async function loadImage(db: Database, fileId: string | null): Promise<PdfImage 
   return { data: Buffer.from(await new Response(stored.stream).arrayBuffer()), format };
 }
 
-export async function loadQuotationPdfData(db: Database, id: string, revisionNo?: number): Promise<QuotationPdfData | null> {
-  const detail = await getQuotationDetail(db, id, revisionNo);
-  if (!detail) return null;
+/** The business block, logo and brand strip shared by every PDF; `businessUpdatedAt` tells a cache when it went stale. */
+export type PdfBranding = Pick<QuotationPdfData, "business" | "logo" | "brandStrip" | "businessUpdatedAt">;
+
+export async function loadPdfBranding(db: Database): Promise<PdfBranding | null> {
   const [profile] = await db.select().from(businessProfile).limit(1);
   if (!profile) return null;
   const [logo, brandStrip] = await Promise.all([loadImage(db, profile.logoFileId), loadImage(db, profile.brandStripFileId)]);
@@ -72,11 +73,21 @@ export async function loadQuotationPdfData(db: Database, id: string, revisionNo?
     },
     logo,
     brandStrip,
+    businessUpdatedAt: profile.updatedAt,
+  };
+}
+
+export async function loadQuotationPdfData(db: Database, id: string, revisionNo?: number): Promise<QuotationPdfData | null> {
+  const detail = await getQuotationDetail(db, id, revisionNo);
+  if (!detail) return null;
+  const branding = await loadPdfBranding(db);
+  if (!branding) return null;
+  return {
+    ...branding,
     number: detail.quotation.number,
     customerName: detail.customerName,
     revision: detail.current,
     lines: detail.lines,
     draft: detail.current.issuedAt === null,
-    businessUpdatedAt: profile.updatedAt,
   };
 }

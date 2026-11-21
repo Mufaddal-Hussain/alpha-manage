@@ -26,6 +26,7 @@ Vehicle no., driver name and phone.
 Table: Sl · Description of goods · HSN/SAC · Quantity (unit) · Rate · per · Disc % · Amount. Rate/Amount columns and the tax/round-off/total block appear only when `show_prices` is true; otherwise quantity-only. Total quantity row.
 When prices are shown: charges (transport), CGST/SGST or IGST, round-off, total, amount in words, HSN-wise taxable summary.
 Footer: "Received in good condition" block (receiver name, signature, date), "for {business} — Authorised signatory", "This is a computer generated document". Cancelled challans carry a "CANCELLED" mark.
+**As built (Phase 7).** "Reference no. & date" and "Buyer's order no. & date" are one cell each (one stored text, as in `data-model.md`), not separate number and date cells. Vehicle number, driver name and driver phone are a strip under the header. The price block is items only: charges (transport) are not carried on a challan, because a PO has no charge lines to copy them from. The CANCELLED mark is a large diagonal stamp plus a line under the title with the date and reason. Title is "DELIVERY NOTE / DELIVERY CHALLAN".
 
 ## Acceptance check (from the Radius 9 sample)
 

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text -- react-pdf's <Image> draws into the PDF; it has no alt attribute */
 import { Image, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { FONT, FONT_BOLD } from "@/lib/pdf/fonts";
-import type { QuotationPdfData } from "@/lib/pdf/quotation-data";
+import type { PdfBranding } from "@/lib/pdf/quotation-data";
 
 // Pieces shared by the quotation PDF layouts. A4 portrait, 11 pt margins are set by the page itself.
 
@@ -18,7 +18,7 @@ export const base = StyleSheet.create({
 });
 
 /** Business block: logo, name, address, contact and GSTIN, from the business profile. */
-export function BusinessHeader({ data }: { data: QuotationPdfData }) {
+export function BusinessHeader({ data }: { data: PdfBranding }) {
   const b = data.business;
   return (
     <View style={{ flexDirection: "row", alignItems: "flex-start", flexGrow: 1 }}>
@@ -43,7 +43,7 @@ export function BusinessHeader({ data }: { data: QuotationPdfData }) {
  * the signature block. Page numbers are left out on purpose: react-pdf draws a `render` Text with the bundled font as
  * blank, and a quotation is normally one page.
  */
-export function PageFooter({ data }: { data: QuotationPdfData }) {
+export function PageFooter({ data }: { data: PdfBranding }) {
   if (!data.brandStrip) return null;
   return (
     <View wrap={false} style={{ marginTop: 16 }}>
@@ -78,7 +78,7 @@ export function Terms({ text }: { text: string | null }) {
 }
 
 /** "for {business}" with room to sign. */
-export function SignatureBlock({ data, receiver = false }: { data: QuotationPdfData; receiver?: boolean }) {
+export function SignatureBlock({ data, receiver = false }: { data: PdfBranding; receiver?: boolean }) {
   return (
     <View wrap={false} style={{ flexDirection: "row", justifyContent: receiver ? "space-between" : "flex-end", marginTop: 18 }}>
       {receiver ? (

@@ -229,17 +229,17 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 
 ### Tests for User Story 4
 
-- [ ] T070 [P] [US4] Write failing integration tests in `tests/integration/challan.test.ts`: 60 + 40 on 100 ordered; over-delivery rejected; owner override requires a reason and is audited; sales cannot override; cancel restores pending and keeps the number; two concurrent challans cannot jointly exceed pending; PO status moves open → partially delivered → delivered and back after cancel
-- [ ] T071 [P] [US4] Write Playwright test `tests/e2e/challan.spec.ts`: create two partial challans from a PO and download the PDF with prices hidden and shown
+- [X] T070 [P] [US4] Write failing integration tests in `tests/integration/challan.test.ts`: 60 + 40 on 100 ordered; over-delivery rejected; owner override requires a reason and is audited; sales cannot override; cancel restores pending and keeps the number; two concurrent challans cannot jointly exceed pending; PO status moves open → partially delivered → delivered and back after cancel
+- [X] T071 [P] [US4] Write Playwright test `tests/e2e/challan.spec.ts`: create two partial challans from a PO and download the PDF with prices hidden and shown
 
 ### Implementation for User Story 4
 
-- [ ] T072 [US4] Define `delivery_challan` (`data-model.md` `delivery_challan.number`, `delivery_challan.status`, `delivery_challan.show_prices`, `delivery_challan.vehicle_no`) and `challan_line` (`data-model.md` `challan_line.quantity`) in `src/db/schema/challans.ts`; generate the migration
-- [ ] T073 [US4] Implement pending-quantity query (`delivered = SUM` over issued challans, never stored) in `src/lib/challan/pending.ts` and the actions in `src/server/challans.ts`: `createChallan` (single transaction: lock PO lines `FOR UPDATE`, check pending, owner override with reason, number from `nextNumber`, snapshots of consignee/buyer, update PO status), `cancelChallan` (reason, status change, number kept); audit every action; make T070 pass
-- [ ] T074 [US4] Build `src/app/(app)/challans/new/page.tsx` (from `?order=[id]`, quantities prefilled with pending, header fields per `contracts/document-layouts.md` §3, show-prices toggle, owner-only override control), `src/app/(app)/challans/page.tsx` and `src/app/(app)/challans/[id]/page.tsx` (cancel with reason)
-- [ ] T075 [US4] Replace the delivery-progress placeholder on `src/app/(app)/orders/[id]/page.tsx` with ordered / delivered / pending per line and the list of challans
-- [ ] T076 [P] [US4] Build the challan PDF layout in `src/lib/pdf/challan.tsx` per `contracts/document-layouts.md` §3 (consignee and buyer blocks, vehicle/driver, receiver block, optional prices and tax summary, CANCELLED mark)
-- [ ] T077 [US4] Extend `src/app/api/documents/[kind]/[id]/pdf/route.ts` to serve `challan` with the `prices` option; make T071 pass; verify quickstart scenarios 8 and 9
+- [X] T072 [US4] Define `delivery_challan` (`data-model.md` `delivery_challan.number`, `delivery_challan.status`, `delivery_challan.show_prices`, `delivery_challan.vehicle_no`) and `challan_line` (`data-model.md` `challan_line.quantity`) in `src/db/schema/challans.ts`; generate the migration
+- [X] T073 [US4] Implement pending-quantity query (`delivered = SUM` over issued challans, never stored) in `src/lib/challan/pending.ts` and the actions in `src/server/challans.ts`: `createChallan` (single transaction: lock PO lines `FOR UPDATE`, check pending, owner override with reason, number from `nextNumber`, snapshots of consignee/buyer, update PO status), `cancelChallan` (reason, status change, number kept); audit every action; make T070 pass
+- [X] T074 [US4] Build `src/app/(app)/challans/new/page.tsx` (from `?order=[id]`, quantities prefilled with pending, header fields per `contracts/document-layouts.md` §3, show-prices toggle, owner-only override control), `src/app/(app)/challans/page.tsx` and `src/app/(app)/challans/[id]/page.tsx` (cancel with reason)
+- [X] T075 [US4] Replace the delivery-progress placeholder on `src/app/(app)/orders/[id]/page.tsx` with ordered / delivered / pending per line and the list of challans
+- [X] T076 [P] [US4] Build the challan PDF layout in `src/lib/pdf/challan.tsx` per `contracts/document-layouts.md` §3 (consignee and buyer blocks, vehicle/driver, receiver block, optional prices and tax summary, CANCELLED mark)
+- [X] T077 [US4] Extend `src/app/api/documents/[kind]/[id]/pdf/route.ts` to serve `challan` with the `prices` option; make T071 pass; verify quickstart scenarios 8 and 9
 
 **Checkpoint**: The full phase 1 flow (customer → quotation → PO → challans) works.
 

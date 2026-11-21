@@ -11,9 +11,9 @@ Query: `revision` (optional, default current), `layout` (optional: `gst_quotatio
 
 ## `GET /api/documents/challan/[id]/pdf`
 
-Query: `prices` (`show` | `hide`, default from the challan), `download`.
+Query: `prices` (`show` | `hide`, default from the challan's `show_prices`; anything else is `400`), `download`.
 
-- `200 application/pdf`; `404`; cancelled challans render with a "CANCELLED" mark.
+- `200 application/pdf`, named `{number}.pdf` with `/` replaced by `-` (e.g. `CH-2026-27-0001.pdf`); `404`; cancelled challans render with a "CANCELLED" mark. Rendered on every request (not cached).
 
 ## `GET /api/files/[id]`
 
@@ -40,8 +40,8 @@ The blank price-list template (`.xlsx`: the `Prices` sheet with its header row a
 | `sendQuotation` / `approveQuotation` / `rejectQuotation` / `reinstateQuotation` | id (+ note) | valid transitions only; audit logged |
 | `reviseQuotation` | id | creates revision n+1; blocked when approved |
 | `recordPurchaseOrder` | quotation id, customer PO no., date, lines (quotation line, ordered quantity), advance, notes, files (PDF, PNG, JPEG or WebP; up to 5, 10 MB each, 18 MB together), confirm-duplicate flag | quotation must be `approved` (rejected/expired/sent/draft are refused with a reinstate/approve hint); quantity > 0, whole boxes for box items, each line once, charge lines cannot be ordered; duplicate (customer, PO no.) refused unless confirmed, the confirmation is audited; PO lines snapshot description, HSN, unit, rate, discount, GST |
-| `createChallan` | PO id, header fields, lines (po_line, quantity), show prices | locks PO lines; quantity ≤ pending unless owner override with reason; assigns number |
-| `cancelChallan` | id, reason | status → cancelled; number retained; quantities return to pending |
+| `createChallan` | PO id, challan date, consignee, header fields, vehicle/driver, lines (po_line, quantity), show prices, override reason | one transaction: locks the PO and its lines, recomputes pending from issued challans; quantity > 0 (whole boxes for box items), each line once, ≤ pending unless an **owner** gives an override reason (audited as `override`; sales are refused even with a reason); date between PO date and today; snapshots consignee, buyer and item details; assigns the number from the `challan` series; moves the PO to partially delivered / delivered |
+| `cancelChallan` | id, reason | reason required; owner any challan, sales only their own on the day it was issued; status → cancelled; number retained; quantities return to pending; PO status recomputed; audited |
 | `startPriceListImport` | brand, file, source type | creates `import_job` |
 | `approveImport` | job id, accepted rows | creates price list version, groups, designs, products; does not change selling prices; flags changed costs |
 | `setSellingPrice` | product id, price **or** margin % | updates both consistently |

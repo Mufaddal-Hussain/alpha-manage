@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
+import { ChallanStatusBadge } from "@/components/challans/challan-status-badge";
 import { PoStatusBadge } from "@/components/orders/po-status-badge";
 import { requireUser } from "@/lib/auth/session";
 import { formatDate, formatInr, formatQuantity, formatRupees, UNIT_LABELS } from "@/lib/format";
+import { getOrderDelivery } from "@/server/challan-queries";
 import { getPurchaseOrder } from "@/server/order-queries";
 
 export const metadata = { title: "Purchase order · alpha-Manage" };
@@ -15,11 +17,14 @@ function fileSize(bytes: number): string {
 }
 
 export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
-  await requireUser();
+  const user = await requireUser();
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) notFound();
   const detail = await getPurchaseOrder(id);
   if (!detail) notFound();
+  const { lines: delivery, challans } = await getOrderDelivery(id);
+  const progress = new Map(delivery.map((d) => [d.poLineId, d]));
+  const anyPending = delivery.some((d) => Number(d.pending) > 0);
   const { order, customerName, quotationNumber, revisionNo, lines, notOrdered, files, value, quotedValue } = detail;
   const anyDifference = lines.some((l) => l.quantityQuoted !== null && Number(l.quantityOrdered) !== Number(l.quantityQuoted)) || notOrdered.length > 0;
 
@@ -98,7 +103,8 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
                 <th className="px-3 py-2 text-right font-medium">Ordered</th>
                 <th className="px-3 py-2 text-right font-medium">Difference</th>
                 <th className="px-3 py-2 text-right font-medium">Rate</th>
-                <th className="px-3 py-2 font-medium">Delivery</th>
+                <th className="px-3 py-2 text-right font-medium">Delivered</th>
+                <th className="px-3 py-2 text-right font-medium">Pending</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -122,9 +128,14 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
                       {formatInr(l.rate)}
                       {Number(l.discountPercent) > 0 ? <span className="block text-xs text-muted">{formatQuantity(l.discountPercent)}% off</span> : null}
                     </td>
-                    {/* Placeholder until challans exist (Phase 7): ordered / delivered / pending per line. */}
-                    <td className="px-3 py-2 text-muted" data-testid={`po-delivery-${l.lineNo}`}>
-                      Not tracked yet
+                    <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums" data-testid={`po-delivered-${l.lineNo}`}>
+                      {formatQuantity(progress.get(l.id)?.delivered ?? 0)} {UNIT_LABELS[l.unit]}
+                    </td>
+                    <td className="px-3 py-2 text-right whitespace-nowrap font-medium tabular-nums" data-testid={`po-pending-${l.lineNo}`}>
+                      {formatQuantity(progress.get(l.id)?.pending ?? 0)} {UNIT_LABELS[l.unit]}
+                      {Number(progress.get(l.id)?.excess ?? 0) > 0 ? (
+                        <span className="block text-xs font-normal text-accent">{formatQuantity(progress.get(l.id)!.excess)} over-delivered (owner override)</span>
+                      ) : null}
                     </td>
                   </tr>
                 );
@@ -140,7 +151,8 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
                   <td className="px-3 py-2 text-right">0</td>
                   <td className="px-3 py-2 text-right whitespace-nowrap">not ordered</td>
                   <td className="px-3 py-2 text-right tabular-nums">{formatInr(l.rate)}</td>
-                  <td className="px-3 py-2">–</td>
+                  <td className="px-3 py-2 text-right">–</td>
+                  <td className="px-3 py-2 text-right">–</td>
                 </tr>
               ))}
             </tbody>
@@ -151,7 +163,38 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
         ) : (
           <p className="text-sm text-muted">This PO matches the quotation.</p>
         )}
-        <p className="text-xs text-muted">Ordered, delivered and pending quantities per line will show here once delivery challans are recorded.</p>
+        <p className="text-xs text-muted">Delivered is the total on issued challans; a cancelled challan no longer counts, so its quantities are pending again.</p>
+      </section>
+
+      <section className="flex flex-col gap-3" aria-label="Challans">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-medium">Delivery challans</h2>
+          {order.status !== "cancelled" && (anyPending || user.role === "owner") ? (
+            <Link href={`/challans/new?order=${order.id}`} className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground hover:opacity-90">
+              New challan
+            </Link>
+          ) : null}
+        </div>
+        {challans.length === 0 ? (
+          <p className="text-sm text-muted">No challan has been issued against this PO yet.</p>
+        ) : (
+          <ul className="divide-y divide-border rounded-lg border border-border bg-surface text-sm">
+            {challans.map((c) => (
+              <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-2" data-testid="po-challan">
+                <span>
+                  <Link href={`/challans/${c.id}`} className="font-medium hover:underline">
+                    {c.number}
+                  </Link>
+                  <span className="ml-2 text-muted">
+                    {formatDate(c.challanDate)}
+                    {c.vehicleNo ? ` · ${c.vehicleNo}` : ""}
+                  </span>
+                </span>
+                <ChallanStatusBadge status={c.status} />
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {order.notes ? (
