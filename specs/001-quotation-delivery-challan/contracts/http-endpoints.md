@@ -17,7 +17,7 @@ Query: `prices` (`show` | `hide`, default from the challan), `download`.
 
 ## `GET /api/files/[id]`
 
-Streams a stored file (PO attachment, import source, logo) after checking the caller may see the owning record. `200` with the original content type; `403`/`404` otherwise. Never exposes a public storage URL.
+Streams a stored file (PO attachment, import source, logo) after checking the caller may see the owning record. Every signed-in staff member may see every PO (both roles have the Orders screens), so PO attachments need no per-record check beyond the session; add one here if that ever changes. `200` with the original content type; `403`/`404` otherwise. Never exposes a public storage URL.
 
 ## `GET /api/imports/template`
 
@@ -39,7 +39,7 @@ The blank price-list template (`.xlsx`: the `Prices` sheet with its header row a
 | `issueQuotation` | quotation id | assigns number from series in the same transaction; computes and freezes totals |
 | `sendQuotation` / `approveQuotation` / `rejectQuotation` / `reinstateQuotation` | id (+ note) | valid transitions only; audit logged |
 | `reviseQuotation` | id | creates revision n+1; blocked when approved |
-| `recordPurchaseOrder` | quotation id, customer PO no., date, lines, advance, file | quotation must be `approved`; duplicate PO no. needs confirmation |
+| `recordPurchaseOrder` | quotation id, customer PO no., date, lines (quotation line, ordered quantity), advance, notes, files (PDF, PNG, JPEG or WebP; up to 5, 10 MB each, 18 MB together), confirm-duplicate flag | quotation must be `approved` (rejected/expired/sent/draft are refused with a reinstate/approve hint); quantity > 0, whole boxes for box items, each line once, charge lines cannot be ordered; duplicate (customer, PO no.) refused unless confirmed, the confirmation is audited; PO lines snapshot description, HSN, unit, rate, discount, GST |
 | `createChallan` | PO id, header fields, lines (po_line, quantity), show prices | locks PO lines; quantity ≤ pending unless owner override with reason; assigns number |
 | `cancelChallan` | id, reason | status → cancelled; number retained; quantities return to pending |
 | `startPriceListImport` | brand, file, source type | creates `import_job` |

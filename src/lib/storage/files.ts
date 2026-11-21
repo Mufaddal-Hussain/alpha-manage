@@ -57,17 +57,23 @@ export async function deleteStoredFile(fileId: string): Promise<void> {
   if (row) await getStorage().delete(row.storageKey);
 }
 
-/** Spreadsheet and PDF uploads for price lists (T059): the template to import and the distributor's PDF kept for reference. */
+/** Uploads of documents the system keeps: price-list files (T059) and customer POs (T067). */
 export const DOCUMENT_KINDS = {
   /** The Excel/CSV template that is read by the import. */
   template: { maxBytes: 5 * 1024 * 1024, label: "template" },
   /** The distributor's original PDF: attached to a price list for reference, never read by the system (FR-007). */
   reference: { maxBytes: 15 * 1024 * 1024, label: "PDF" },
+  /** The customer's PO as received: a PDF, or a scan or photo of it. */
+  purchaseOrder: { maxBytes: 10 * 1024 * 1024, label: "PO file" },
 } as const;
 
 /** Detects what an uploaded document really is from its first bytes and its name; the browser's MIME type is not trusted. */
 function sniffDocument(bytes: Buffer, name: string, kind: keyof typeof DOCUMENT_KINDS): string | null {
   const lower = name.toLowerCase();
+  if (kind === "purchaseOrder") {
+    if (lower.endsWith(".pdf") && bytes.subarray(0, 5).toString("ascii") === "%PDF-") return "application/pdf";
+    return sniffImageType(bytes);
+  }
   if (kind === "reference") {
     return lower.endsWith(".pdf") && bytes.subarray(0, 5).toString("ascii") === "%PDF-" ? "application/pdf" : null;
   }
@@ -86,7 +92,13 @@ export async function saveDocumentUpload(upload: File, uploadedBy: string, kind:
   const bytes = Buffer.from(await upload.arrayBuffer());
   const detected = sniffDocument(bytes, upload.name, kind);
   if (!detected) {
-    throw new ValidationError(kind === "reference" ? "The reference file must be a PDF" : "Choose the price-list template as an .xlsx or .csv file");
+    throw new ValidationError(
+      kind === "reference"
+        ? "The reference file must be a PDF"
+        : kind === "purchaseOrder"
+          ? "Attach the PO as a PDF, or a PNG, JPEG or WebP picture"
+          : "Choose the price-list template as an .xlsx or .csv file",
+    );
   }
   const storageKey = `uploads/${randomUUID()}/${safeName(upload.name)}`;
   await getStorage().put(storageKey, bytes, { contentType: detected });

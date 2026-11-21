@@ -47,3 +47,6 @@ next-env.d.ts
 
 # local file storage (STORAGE_DRIVER=local)
 /.data/
+
+# unrelated scratch project folder
+/my-project/

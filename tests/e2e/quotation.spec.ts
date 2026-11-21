@@ -29,13 +29,15 @@ test.beforeAll(async () => {
   const db = getDb();
   await migrate(db, { migrationsFolder: path.join(process.cwd(), "src/db/migrations") });
   await createStaffUser(sales);
-  const [profile] = await db.select({ id: businessProfile.id }).from(businessProfile).limit(1);
-  if (!profile) {
-    await db.insert(businessProfile).values({
+  // Spec files run in parallel and share the one business_profile row: insert only if nobody else just did.
+  const inserted = await db
+    .insert(businessProfile)
+    .values({
       legalName: "E2E Q Alpha Tiles", tradeName: "Alpha Tiles", addressLine1: "Shop No. G-4, The Capital Mall", city: "Pune", state: "Maharashtra", stateCode: "27", gstin: "27ABYFA7430K1ZT",
-    });
-    createdProfile = true;
-  }
+    })
+    .onConflictDoNothing()
+    .returning({ id: businessProfile.id });
+  createdProfile = inserted.length > 0;
   await db.insert(customer).values([
     { type: "company", displayName: CUSTOMER, stateCode: "27", addressLine1: "Baner", city: "Pune" },
     { type: "company", displayName: JAIPUR, gstin: "08BOSPP7444G1ZA", stateCode: "08", addressLine1: "Malviya Nagar", city: "Jaipur" },

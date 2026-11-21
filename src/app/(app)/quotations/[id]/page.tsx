@@ -7,7 +7,9 @@ import { StatusBadge } from "@/components/quotations/status-badge";
 import { requireUser } from "@/lib/auth/session";
 import { formatDate, formatInr, formatQuantity, UNIT_LABELS } from "@/lib/format";
 import { getStateByCode } from "@/lib/gst/state-codes";
-import { allowedActions, effectiveStatus } from "@/lib/quotation/status";
+import { PoStatusBadge } from "@/components/orders/po-status-badge";
+import { allowedActions, canRecordPurchaseOrder, effectiveStatus, purchaseOrderRefusal } from "@/lib/quotation/status";
+import { getQuotationPurchaseOrders } from "@/server/order-queries";
 import { getQuotation } from "@/server/quotation-queries";
 
 export const metadata = { title: "Quotation · alpha-Manage" };
@@ -22,7 +24,7 @@ export default async function QuotationPage({ params, searchParams }: PageProps<
   const query = await searchParams;
   const asked = typeof query.revision === "string" && /^\d+$/.test(query.revision) ? Number(query.revision) : undefined;
 
-  const detail = await getQuotation(id, asked);
+  const [detail, orders] = await Promise.all([getQuotation(id, asked), getQuotationPurchaseOrders(id)]);
   if (!detail) notFound();
   const { quotation, customerName, current, revisions, lines } = detail;
   const latest = revisions[0];
@@ -76,6 +78,43 @@ export default async function QuotationPage({ params, searchParams }: PageProps<
           <StatusActions id={id} actions={actions} hasNumber={quotation.number !== null} currentValidUntil={latest.validUntil} expired={view === "expired"} />
           {quotation.status === "approved" ? (
             <p className="text-sm text-muted">Approved quotations are locked. Duplicate it to quote something similar.</p>
+          ) : null}
+        </section>
+      ) : null}
+
+      {viewingLatest && (quotation.number !== null && quotation.status !== "draft") ? (
+        <section className="flex flex-col gap-3" aria-label="Purchase orders">
+          <h2 className="text-lg font-medium">Purchase orders</h2>
+          {canRecordPurchaseOrder(view) ? (
+            <div>
+              <Link href={`/orders/new?quotation=${id}`} className="inline-block rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground hover:opacity-90">
+                Record PO
+              </Link>
+            </div>
+          ) : (
+            <div>
+              <button type="button" disabled aria-describedby="po-blocked-reason" className="cursor-not-allowed rounded-md border border-border px-3 py-1.5 text-sm text-muted opacity-60">
+                Record PO
+              </button>
+              <p id="po-blocked-reason" data-testid="po-blocked-reason" className="mt-2 text-sm text-muted">
+                {purchaseOrderRefusal(view)}.
+              </p>
+            </div>
+          )}
+          {orders.length > 0 ? (
+            <ul className="divide-y divide-border rounded-lg border border-border bg-surface text-sm">
+              {orders.map((o) => (
+                <li key={o.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-2">
+                  <span>
+                    <Link href={`/orders/${o.id}`} className="font-medium hover:underline">
+                      PO {o.customerPoNumber}
+                    </Link>
+                    <span className="ml-2 text-muted">{formatDate(o.poDate)}</span>
+                  </span>
+                  <PoStatusBadge status={o.status} />
+                </li>
+              ))}
+            </ul>
           ) : null}
         </section>
       ) : null}

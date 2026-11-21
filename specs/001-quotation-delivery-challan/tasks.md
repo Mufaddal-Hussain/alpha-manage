@@ -205,15 +205,15 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 
 ### Tests for User Story 3
 
-- [ ] T064 [P] [US3] Write failing integration tests in `tests/integration/purchase-order.test.ts`: PO only against an approved quotation; duplicate customer PO number requires confirmation and is audited; ordered quantity may differ from quoted; PO lines snapshot description, HSN, rate
-- [ ] T065 [P] [US3] Write Playwright test `tests/e2e/purchase-order.spec.ts`: approve a quotation, record a PO with a file attached, open the file through `/api/files/[id]`
+- [X] T064 [P] [US3] Write failing integration tests in `tests/integration/purchase-order.test.ts`: PO only against an approved quotation; duplicate customer PO number requires confirmation and is audited; ordered quantity may differ from quoted; PO lines snapshot description, HSN, rate
+- [X] T065 [P] [US3] Write Playwright test `tests/e2e/purchase-order.spec.ts`: approve a quotation, record a PO with a file attached, open the file through `/api/files/[id]`
 
 ### Implementation for User Story 3
 
-- [ ] T066 [US3] Define `purchase_order` (`data-model.md` `purchase_order.status`, `purchase_order.customer_po_number`), `po_line` (`po_line.quantity_ordered`) and the PO file join in `src/db/schema/orders.ts`; generate the migration
-- [ ] T067 [US3] Implement `recordPurchaseOrder` and queries in `src/server/orders.ts` (approved-only check, uniqueness of customer + PO number with confirmed override, snapshots, advance received, file upload through the storage interface, audit log) until T064 passes
-- [ ] T068 [US3] Build `src/app/(app)/orders/new/page.tsx` (from `?quotation=[id]`), `src/app/(app)/orders/page.tsx` and `src/app/(app)/orders/[id]/page.tsx` showing quoted vs ordered differences, attachments, and (placeholder until US4) delivery progress per line
-- [ ] T069 [US3] Add the "Record PO" action to the quotation page `src/app/(app)/quotations/[id]/page.tsx` for approved quotations and block it for rejected/expired ones; make T065 pass
+- [X] T066 [US3] Define `purchase_order` (`data-model.md` `purchase_order.status`, `purchase_order.customer_po_number`), `po_line` (`po_line.quantity_ordered`) and the PO file join in `src/db/schema/orders.ts`; generate the migration
+- [X] T067 [US3] Implement `recordPurchaseOrder` and queries (domain operation in `src/server/order-core.ts`, action in `src/server/orders.ts`, reads in `src/server/order-queries.ts`: a "use server" file exports actions only) (approved-only check, uniqueness of customer + PO number with confirmed override, snapshots, advance received, file upload through the storage interface, audit log) until T064 passes
+- [X] T068 [US3] Build `src/app/(app)/orders/new/page.tsx` (from `?quotation=[id]`), `src/app/(app)/orders/page.tsx` and `src/app/(app)/orders/[id]/page.tsx` showing quoted vs ordered differences, attachments, and (placeholder until US4) delivery progress per line
+- [X] T069 [US3] Add the "Record PO" action to the quotation page `src/app/(app)/quotations/[id]/page.tsx` for approved quotations and block it for rejected/expired ones; make T065 pass
 
 **Checkpoint**: Quotation → approval → PO works end to end.
 

@@ -74,9 +74,9 @@ A quotation gets its number when it first leaves `draft` (issue), so gap-free nu
 
 ## Purchase order (customer PO)
 
-**purchase_order** — `internal_ref` (optional, own series later), quotation, `quotation_revision_id` (the approved revision), customer, **customer_po_number**, `po_date`, `advance_received`, `notes`, `status` (`open` | `partially_delivered` | `delivered` | `cancelled`), attachment file(s) (via `po_file` join: PO, file), `created_by`. Unique (customer, customer_po_number) unless override noted in audit_log.
+**purchase_order** — `internal_ref` (optional, own series later; not built in Phase 6), quotation, `quotation_revision_id` (the approved revision), customer, **customer_po_number**, `po_date`, `advance_received`, `notes`, `status` (`open` | `partially_delivered` | `delivered` | `cancelled`), attachment file(s) (via `po_file` join: PO, file), `created_by`. (customer, customer_po_number) is checked in the recording transaction (case- and space-insensitive, cancelled POs ignored, under a lock on the customer row), not by a unique constraint, so a confirmed duplicate can be stored; the override is written to `audit_log` (action `override`). A quotation may have several POs.
 
-**po_line** — PO, `quotation_line_id` (nullable if added at PO time), **snapshot** description, `hsn_code`, `unit`, `quantity_ordered`, `quantity_quoted` (for difference display), `rate`, `gst_rate`.
+**po_line** — PO, `quotation_line_id` (nullable if added at PO time; Phase 6 offers no way to add a line that is not on the quotation), **snapshot** description, `hsn_code`, `unit`, `quantity_ordered` (> 0; whole boxes for box items), `quantity_quoted` (for difference display), `rate`, `discount_percent` (added in Phase 6 so the ordered value and later challan rates match the quotation), `gst_rate`. Only product lines of the quotation can be ordered: charge lines (transport and the like) are not PO lines, and an item the customer did not order is simply left out (the PO page lists it as "not ordered").
 
 `status` is derived and kept in sync by challan transactions (`open` when delivered = 0, `partially_delivered` when 0 < delivered < ordered on any line, `delivered` when every line is fully delivered, unless cancelled by owner).
 

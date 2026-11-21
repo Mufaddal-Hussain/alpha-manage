@@ -18,8 +18,8 @@ export async function GET(_request: NextRequest, ctx: RouteContext<"/api/files/[
   const [row] = await getDb().select().from(file).where(eq(file.id, id)).limit(1);
   if (!row) return Response.json({ error: "Not found" }, { status: 404 });
   // The business logo and brand strip, and price-list files (the import template and the distributor's reference PDF),
-  // are visible to every signed-in staff member (sales may view the catalog). When PO attachments arrive, check the
-  // owning record here and answer 403.
+  // are visible to every signed-in staff member (sales may view the catalog). So are PO attachments: both roles have the
+  // Orders screens (contracts/ui-routes.md). If a role ever loses access to POs, check the owning record here and answer 403.
 
   const stored = await getStorage().get(row.storageKey);
   if (!stored) return Response.json({ error: "Not found" }, { status: 404 });

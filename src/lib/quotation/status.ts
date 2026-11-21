@@ -95,3 +95,27 @@ function verb(action: QuotationAction): string {
       return "deleted";
   }
 }
+
+/**
+ * A customer PO is recorded only against an approved quotation (FR-022, US3). This is not a quotation action:
+ * recording a PO leaves the quotation as it is, so it stays out of `allowedActions`.
+ */
+export function canRecordPurchaseOrder(view: DisplayStatus): boolean {
+  return view === "approved";
+}
+
+/** Why a PO cannot be recorded yet, in words for the person who tried. */
+export function purchaseOrderRefusal(view: DisplayStatus): string {
+  switch (view) {
+    case "approved":
+      return "";
+    case "draft":
+      return "A PO can only be recorded against an approved quotation; this one is still a draft";
+    case "sent":
+      return "A PO can only be recorded against an approved quotation; approve this one first";
+    case "rejected":
+      return "This quotation was rejected; reinstate it and approve it before recording a PO";
+    case "expired":
+      return "This quotation has expired; reinstate it with a new valid-until date and approve it before recording a PO";
+  }
+}

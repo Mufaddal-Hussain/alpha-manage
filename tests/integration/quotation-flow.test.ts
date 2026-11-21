@@ -122,13 +122,12 @@ suite("quotation flow (real Postgres)", () => {
     await cleanup();
     const db = await getTestDb();
     // The business state code drives intra/inter-state tax.
-    const [profile] = await db.select({ id: businessProfile.id }).from(businessProfile).limit(1);
-    if (!profile) {
-      await db.insert(businessProfile).values({
-        legalName: "ZZTEST Alpha Tiles", addressLine1: "Shop 4", city: "Pune", state: "Maharashtra", stateCode: "27",
-      });
-      createdBusinessProfile = true;
-    }
+    const inserted = await db
+      .insert(businessProfile)
+      .values({ legalName: "ZZTEST Alpha Tiles", addressLine1: "Shop 4", city: "Pune", state: "Maharashtra", stateCode: "27" })
+      .onConflictDoNothing() // test files run in parallel and share the one business_profile row
+      .returning({ id: businessProfile.id });
+    createdBusinessProfile = inserted.length > 0;
     // Own series row with the default format, so another test's edited format can never leak into these numbers.
     await db.insert(numberSeries).values({ series: "quotation", financialYear: FY, format: DEFAULT_FORMATS.quotation, lastValue: 0 });
     const [u] = await db

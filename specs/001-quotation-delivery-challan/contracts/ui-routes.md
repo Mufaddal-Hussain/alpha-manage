@@ -15,7 +15,7 @@ All routes except `/sign-in` require a signed-in staff user. `owner` can do ever
 | `/quotations/new` | Create (customer, lines, charges, terms, layout) | ✔ | ✔ |
 | `/quotations/[id]` | View current revision, history of revisions, status actions, PDF, duplicate | ✔ | ✔ |
 | `/quotations/[id]/revise` | New revision (not allowed once approved) | ✔ | ✔ |
-| `/orders`, `/orders/new?quotation=[id]`, `/orders/[id]` | Record PO (number, date, attachment, ordered lines, advance); delivery progress per line | ✔ | ✔ |
+| `/orders`, `/orders/new?quotation=[id]`, `/orders/[id]` | List/search POs (customer, PO number, quotation number, status, date); record PO (number, date, attachments, ordered quantities, advance, notes) from `?quotation=[id]` (without it, pick an approved quotation); PO page shows quoted vs ordered, attachments and, from Phase 7, delivery progress per line (a placeholder until then) | ✔ | ✔ |
 | `/challans`, `/challans/new?order=[id]`, `/challans/[id]` | Create challan from PO (lines with pending quantities prefilled), view, PDF, cancel | ✔ create/view; cancel own same-day | ✔ all, override over-delivery |
 | `/settings/business` | Business profile, logo, bank, brand strip | — | ✔ |
 | `/settings/numbering` | Series formats and starting numbers | — | ✔ |

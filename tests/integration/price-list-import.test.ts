@@ -124,11 +124,12 @@ suite("price-list import (real Postgres)", () => {
   beforeAll(async () => {
     await cleanup();
     const db = await getTestDb();
-    const [profile] = await db.select({ id: businessProfile.id }).from(businessProfile).limit(1);
-    if (!profile) {
-      await db.insert(businessProfile).values({ legalName: "ZZTEST Alpha Tiles", addressLine1: "Shop 4", city: "Pune", state: "Maharashtra", stateCode: "27" });
-      createdBusinessProfile = true;
-    }
+    const inserted = await db
+      .insert(businessProfile)
+      .values({ legalName: "ZZTEST Alpha Tiles", addressLine1: "Shop 4", city: "Pune", state: "Maharashtra", stateCode: "27" })
+      .onConflictDoNothing() // test files run in parallel and share the one business_profile row
+      .returning({ id: businessProfile.id });
+    createdBusinessProfile = inserted.length > 0;
     await db.insert(numberSeries).values({ series: "quotation", financialYear: "2096-97", format: DEFAULT_FORMATS.quotation, lastValue: 0 });
     const [u] = await db.insert(user).values({ name: "ZZTEST importer", email: `zztest-import-${Date.now()}@example.test`, role: "sales" }).returning({ id: user.id });
     actorId = u.id;
