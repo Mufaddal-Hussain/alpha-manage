@@ -40,3 +40,27 @@ Each scenario maps to a user story and success criteria in [spec.md](spec.md).
 
 - Environment variables set in the Vercel project (Production and Preview), database connected, `npm run build` passes locally.
 - Smoke test on the deployed URL: sign in, create a quotation, download a PDF, upload a PO file and download it again.
+
+## Validation record (T085, 2026-11-21)
+
+Run on the Phase 8 commit with `npm test` (unit and integration, against the TEST database), `npm run test:e2e` (Chromium desktop and the iPhone-width projects), `npm run build` and `npm run lint`.
+
+| # | Scenario | Result | Where it is proven |
+|---|---|---|---|
+| 1 | Money, GST and words (SC-002) | Pass | `quotation-calc.test.ts` (Radius 9: 3,387.00; inter-state IGST 516.60) and `quotation-sample-set.test.ts` (26 independent cases) |
+| 2 | Customers (US5) | Pass | `gstin.test.ts`, `customer-schema.test.ts`, `customers.test.ts`; `access-control.spec.ts` (sales user cannot reach `/settings/users`) |
+| 3 | Quotation (US1, SC-001) | Pass; the 5-minute timing was not measured | `quotation.spec.ts`, `full-flow.spec.ts`; PDF layout rendered, side-by-side comparison with `document-layouts.md` left to the owner (F-06) |
+| 4 | Numbering (SC-004) | Pass | `numbering.test.ts` (50 concurrent). Two browsers at once are covered by the concurrent transactions test, not by two real browsers. |
+| 5 | Revision and expiry | Pass | `quotation.spec.ts`, `quotation-status.test.ts`, `quotation-flow.test.ts`; the dashboard lists sent quotations by days left |
+| 6 | Price-list import (US2, SC-003) | Pass | `catalog-import.spec.ts`, `price-list-import.test.ts` (second version flags the changed cost, selling prices untouched, old quotations keep their prices; 2,000-design list) |
+| 7 | Purchase order (US3) | Pass | `purchase-order.spec.ts`, `purchase-order.test.ts` (file attached, reduced quantity shown, rejected/expired blocked) |
+| 8 | Partial deliveries (US4, SC-005, SC-006) | Pass | `challan.spec.ts`, `challan.test.ts`, `full-flow.spec.ts` (60 + 40, over-delivery blocked, owner override with reason, cancel restores 60 pending and keeps the number) |
+| 9 | Challan PDF (FR-029) | Pass for rendering (prices hidden and shown, cancelled mark); layout comparison with the Tally delivery note left to the owner (F-06) | `challan.spec.ts` |
+| 10 | Security (SC-007) | Pass | `security-audit.test.ts`, `upload-limits.test.ts`, `security.spec.ts` |
+| 11 | Phone (Phase 9) | Pass in Chromium with iPhone emulation, also on WebKit (see the phase 9 commits); **T093, the iPhone simulator check, is still open because this machine has no full Xcode**, and the real home-screen install has not been tried on hardware | `mobile.spec.ts`, `mobile-audit.spec.ts` |
+| Deploy check | **Not done** | T083 is prepared (`docs/operations.md`) but not run: the owner has not approved a deploy |
+
+Notes for whoever runs the suites:
+
+- Run the e2e suite against the dev server (`npm run test:e2e` starts one). Against a production build (`next start`) the sign-in endpoint is rate limited by Better Auth (about 3 attempts per 10 seconds per address), so parallel specs fail at sign-in; that is the protection working, not a bug.
+- Only one `next dev` can run per folder; if another one is already running, Playwright cannot start its own.

@@ -34,7 +34,7 @@ Approach: a single Next.js 16 App Router application (already scaffolded) with s
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-`.specify/memory/constitution.md` is still the unfilled template, so there are no ratified gates to violate. The plan follows these working principles, proposed for ratification via `/speckit-constitution`:
+`.specify/memory/constitution.md` was ratified as version 1.0.0 on 2026-11-21 (T086) from the principles below, which the plan follows:
 
 | Proposed principle | How this plan complies |
 |---|---|

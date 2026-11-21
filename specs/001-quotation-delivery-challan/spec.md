@@ -197,6 +197,21 @@ Staff keep a customer master of individuals and companies, with GSTIN (for compa
 - **SC-007**: Unauthenticated visitors can access no business data or documents, and sales-role users cannot perform any owner/admin-only action.
 - **SC-008**: Staff can find any past quotation, PO or challan by customer, number, or date in under 30 seconds.
 
+### Verification status (T085, 2026-11-21)
+
+Checked by running the suites and `quickstart.md` (record in that file). Status: **met** = proven by an automated test or by the check named; **met, not timed** = the capability is built and tested but nobody has timed it with a stopwatch; **open** = see the follow-up task.
+
+| ID | Status | Evidence |
+|---|---|---|
+| SC-001 | **met, not timed** | A quotation (customer, products, charge, issue, PDF) is created end to end in `quotation.spec.ts` and `full-flow.spec.ts`; a 10-line, under-5-minute run by a person has not been timed. Follow-up F-05. |
+| SC-002 | **met** | `tests/unit/quotation-sample-set.test.ts`: 26 quotations (intra, inter, discount, paise, fractional sq.ft, mixed GST, zero-rated, negative round-off, lakh and crore) agree with an independent hand-calculation implementation, plus the Radius 9 example in `quotation-calc.test.ts`. |
+| SC-003 | **met** | `price-list-import.test.ts`: a 2,000-design list is previewed and approved, each step under 30 s, unreadable rows reported (not skipped). |
+| SC-004 | **met** | `numbering.test.ts`: 50 concurrent numbers are unique and consecutive; new financial year restarts; cancelled challan numbers are not reused (`challan.test.ts`). |
+| SC-005 | **met** | `challan.test.ts` and `challan.spec.ts`: ordered/delivered/pending after 60+40 partial deliveries, over-delivery block, cancellation restoring quantities; `full-flow.spec.ts` repeats it through the screens. |
+| SC-006 | **met, not timed** | A challan is created from a PO and its PDF opened in `challan.spec.ts` and `full-flow.spec.ts` in a few clicks; not timed by a person. Follow-up F-05. |
+| SC-007 | **met** | `tests/unit/security-audit.test.ts` (every server action, route handler and page authorises; owner-only actions use the owner role) and `tests/e2e/security.spec.ts` (signed-out and forged-cookie requests to every page, `/api/documents/...` and `/api/files/...` are redirected or get 401; sales users are refused every owner-only screen; no self-registration or role escalation through the auth endpoints). |
+| SC-008 | **met, not timed** | Quotation, PO and challan lists filter by customer, number and date (`quotation.spec.ts`, `purchase-order.spec.ts`, `challan.spec.ts`); the dashboard and the audit log add two more ways in. Not timed. |
+
 ## Assumptions
 
 - Real sample documents from the business are kept in `samples/`: two distributor price lists (a multi-brand list from Fun Enterprises effective 01.08.2026, and an Icon / SHCO list R6.1 effective 07.09.2026, 21 pages), a computer-generated delivery note (Tally layout) and a scanned \"Delivery Challan / Estimate\" sheet. Requirements above were checked against these documents.

@@ -253,13 +253,14 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 
 - [X] T078 [P] Build the dashboard `src/app/(app)/page.tsx` (open quotations, expiring soon, POs with pending deliveries)
 - [X] T079 [P] Add an audit log view for owners in `src/app/(app)/settings/audit/page.tsx`
-- [ ] T080 Write the full-flow Playwright test `tests/e2e/full-flow.spec.ts` (customer → quotation → approve → PO → two challans) and run all suites
-- [ ] T081 [P] Security pass: confirm every server action and route handler calls `requireUser()`/`requireRole()`, file uploads enforce type and size limits (spec edge case), and signed-out requests to `/api/documents/...` and `/api/files/...` return 401 (quickstart scenario 10, SC-007)
+- [X] T080 Write the full-flow Playwright test `tests/e2e/full-flow.spec.ts` (customer → quotation → approve → PO → two challans) and run all suites
+- [X] T081 [P] Security pass: confirm every server action and route handler calls `requireUser()`/`requireRole()`, file uploads enforce type and size limits (spec edge case), and signed-out requests to `/api/documents/...` and `/api/files/...` return 401 (quickstart scenario 10, SC-007)
 - [X] T082 [P] Superseded by Phase 9 (`s9-phone`, T087–T094): responsive and accessibility pass at phone width
 - [ ] T083 Configure Vercel: environment variables for Production and Preview, Neon database, Blob store, `npm run build` clean, then run the deploy smoke test from `quickstart.md` (the Vercel and GitHub link already exists from the main session)
-- [ ] T084 [P] Document database backup/restore and owner runbook in `docs/operations.md`, including how the same app is later run on Ubuntu (Node, Postgres, nginx)
-- [ ] T085 Run the whole `quickstart.md` validation and tick off the success criteria SC-001 to SC-008; record gaps as follow-up tasks
-- [ ] T086 Ratify the project constitution from the principles proposed in `plan.md` using `/speckit-constitution`
+  - **Prepared, left open (2026-11-21).** Done inside the repo only: `npm run build` is clean (also in a copy with no `.env*` files, as on Vercel), and `docs/operations.md` section 4 lists the Production and Preview environment variables (names only), the pre-deploy checks and the deploy smoke test. Nothing was pushed or deployed and no Vercel project, variable, storage or `STORAGE_DRIVER` was touched. **Still the owner's:** decide the production storage, create/connect the production Neon database and a Preview branch, connect private Blob stores, set the variables, run migrations and the seed against production, approve the push, then run the smoke test (`docs/operations.md` 4.4, checklist in 4.5).
+- [X] T084 [P] Document database backup/restore and owner runbook in `docs/operations.md`, including how the same app is later run on Ubuntu (Node, Postgres, nginx)
+- [X] T085 Run the whole `quickstart.md` validation and tick off the success criteria SC-001 to SC-008; record gaps as follow-up tasks
+- [X] T086 Ratify the project constitution from the principles proposed in `plan.md` using `/speckit-constitution`
 
 ---
 
@@ -279,6 +280,23 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 - [X] T092 Write `tests/e2e/mobile.spec.ts` at iPhone width for the main flows (sign in, create customer, create and issue a quotation, open the PDF link, record a PO and a challan once those exist): no horizontal overflow, key controls visible and at least 44 px, navigation reachable
 - [ ] T093 Verify in the iPhone simulator (`mcp__Claude_Code_iOS_Simulator__control`): open the running app in Mobile Safari, walk the main flows, test "Add to Home Screen" as far as the simulator allows and check the standalone view and safe areas, then send the owner screenshots; record what the simulator cannot show (for example push, camera, real home-screen install on hardware)
 - [X] T094 [P] Add a short "Install on iPhone" section to `README.md` (Share → Add to Home Screen, sign in once) and tick the phone checks in `quickstart.md`; note that `STORAGE_DRIVER` is a production setting handled under T083, not here
+
+---
+
+## Phase 10: Follow-ups from the Phase 8 validation (T085)
+
+**Purpose**: Gaps found while validating, none of which blocks the quotation, PO and challan flow. Not part of any session yet; the owner decides which to schedule.
+
+- [ ] F-01 Finish T083 (owner decisions and deploy, see `docs/operations.md` section 4.5) and run the deploy smoke test on Preview, then Production
+- [ ] F-02 T093: check the app in the iPhone simulator and on a real iPhone (Add to Home Screen, standalone view, notch and home bar, View and Download PDF). Open because this machine has no full Xcode; Chromium and WebKit emulation pass
+- [ ] F-03 Vercel limits a request to a function to about 4.5 MB (verify in current docs) while the app accepts PO files up to 10 MB each: upload PO attachments and price-list files straight to Blob from the browser, or lower the limits on Vercel
+- [ ] F-04 File backup: a script that copies every Vercel Blob object (and the `file` table's keys) to a local folder, and a restore script; today the backup of files is a documented manual procedure
+- [ ] F-05 Time SC-001 (10-line quotation under 5 minutes), SC-006 (challan under 3 minutes) and SC-008 (find a document under 30 seconds) with a real user on real data
+- [ ] F-06 The owner compares the quotation, estimate and challan PDFs with the paper documents (`contracts/document-layouts.md`, `samples/`) and signs the layout off; also supplies the logo and brand strip
+- [ ] F-07 The business verifies the GST rates and HSN/SAC codes held on products and charge types (placeholders from the sample delivery note)
+- [ ] F-08 Add a small unauthenticated health endpoint (for uptime checks and the nginx/systemd setup); `/sign-in` is used meanwhile
+- [ ] F-09 Make the e2e suite runnable against a production build (a test-only switch for the sign-in rate limit) and when a `next dev` is already running (a configurable `distDir` or port per run)
+- [ ] F-10 Automatic reading of PDF price lists, deferred by the owner (spec assumption); the chunked import endpoint (T062) is built only if a real list exceeds the limits
 
 ---
 
