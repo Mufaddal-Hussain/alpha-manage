@@ -23,6 +23,9 @@ export default defineConfig({
   use: {
     baseURL,
     trace: "on-first-retry",
+    // A step that cannot find its element fails after a minute with a clear message instead of waiting out the whole test.
+    actionTimeout: 60_000,
+    navigationTimeout: 60_000,
   },
   projects: [
     // Desktop: every spec except the phone ones.

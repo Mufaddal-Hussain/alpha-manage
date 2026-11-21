@@ -9,7 +9,7 @@ import { recordPurchaseOrder } from "@/server/order-core";
 import { approveQuotation, issueQuotation, saveDraft, type DraftInput } from "@/server/quotation-core";
 import { closeTestDb, getTestDb, hasTestDb } from "./helpers";
 
-// Needs the TEST database. Everything is prefixed ZZDB and dated in 2096-97, so it never meets real data; the lists are
+// Needs the TEST database. Everything is prefixed ZZDB and dated in 2093-94, so it never meets real data; the lists are
 // asked for a large limit and the assertions only look at this file's own rows (other test files may leave rows behind).
 const suite = hasTestDb() ? describe : describe.skip;
 if (!hasTestDb()) {
@@ -17,8 +17,8 @@ if (!hasTestDb()) {
 }
 
 const PREFIX = "ZZDB ";
-const FY = "2096-97";
-const NOW = new Date("2096-06-15T10:00:00+05:30");
+const FY = "2093-94";
+const NOW = new Date("2093-06-15T10:00:00+05:30");
 const BIG = 10_000;
 
 let ownerId: string;
@@ -27,7 +27,7 @@ let tileId: string;
 let createdBusinessProfile = false;
 
 /** `issuedAt` is the moment of issuing: an already-expired offer can only exist by issuing it earlier than the dashboard's "now". */
-async function quote(validUntil: string, { quotationDate = "2096-06-10", issue = true, approve = false, boxes = "10", issuedAt = NOW } = {}) {
+async function quote(validUntil: string, { quotationDate = "2093-06-10", issue = true, approve = false, boxes = "10", issuedAt = NOW } = {}) {
   const db = await getTestDb();
   const input: DraftInput = {
     customerId,
@@ -50,7 +50,7 @@ async function quote(validUntil: string, { quotationDate = "2096-06-10", issue =
 async function order(quotationId: string, po: string) {
   const db = await getTestDb();
   const lines = await db.select().from(quotationLine).innerJoin(quotation, eq(quotation.currentRevisionId, quotationLine.revisionId)).where(eq(quotation.id, quotationId));
-  const { id } = await recordPurchaseOrder(db, ownerId, { quotationId, customerPoNumber: po, poDate: "2096-06-12", advanceReceived: "0", notes: null, lines: lines.map((r) => ({ quotationLineId: r.quotation_line.id, quantity: r.quotation_line.quantity })) }, NOW);
+  const { id } = await recordPurchaseOrder(db, ownerId, { quotationId, customerPoNumber: po, poDate: "2093-06-12", advanceReceived: "0", notes: null, lines: lines.map((r) => ({ quotationLineId: r.quotation_line.id, quantity: r.quotation_line.quantity })) }, NOW);
   const [pl] = await db.select().from(poLine).where(eq(poLine.purchaseOrderId, id));
   return { id, poLineId: pl.id };
 }
@@ -112,21 +112,21 @@ suite("dashboard and audit log queries (real Postgres)", () => {
       const db = await getTestDb();
       // Each document is built through the real domain code over the network, so the independent ones run side by side.
       const [soon, lastDay, edge, later, expired, draft, approvedNoPo, openQ, doneQ, partialQ] = await Promise.all([
-        quote("2096-06-18"), // 3 days left
-        quote("2096-06-15"), // valid through today
-        quote("2096-06-22"), // exactly 7 days: still "soon"
-        quote("2096-06-23"), // 8 days: open, not expiring soon
-        quote("2096-06-14", { issuedAt: new Date("2096-06-11T10:00:00+05:30") }), // sent, past its date by "now"
-        quote("2096-07-01", { issue: false }),
-        quote("2096-06-17", { approve: true }),
-        quote("2096-06-30", { approve: true }),
-        quote("2096-06-30", { approve: true }),
-        quote("2096-06-30", { approve: true, boxes: "20" }),
+        quote("2093-06-18"), // 3 days left
+        quote("2093-06-15"), // valid through today
+        quote("2093-06-22"), // exactly 7 days: still "soon"
+        quote("2093-06-23"), // 8 days: open, not expiring soon
+        quote("2093-06-14", { issuedAt: new Date("2093-06-11T10:00:00+05:30") }), // sent, past its date by "now"
+        quote("2093-07-01", { issue: false }),
+        quote("2093-06-17", { approve: true }),
+        quote("2093-06-30", { approve: true }),
+        quote("2093-06-30", { approve: true }),
+        quote("2093-06-30", { approve: true, boxes: "20" }),
       ]);
       const [open, done, partial] = await Promise.all([order(openQ, "ZZDB-PO-OPEN"), order(doneQ, "ZZDB-PO-DONE"), order(partialQ, "ZZDB-PO-PART")]);
       await Promise.all([
-        createChallan(db, ownerId, { purchaseOrderId: done.id, challanDate: "2096-06-15", lines: [{ poLineId: done.poLineId, quantity: "10" }] }, NOW),
-        createChallan(db, ownerId, { purchaseOrderId: partial.id, challanDate: "2096-06-15", lines: [{ poLineId: partial.poLineId, quantity: "5" }] }, NOW),
+        createChallan(db, ownerId, { purchaseOrderId: done.id, challanDate: "2093-06-15", lines: [{ poLineId: done.poLineId, quantity: "10" }] }, NOW),
+        createChallan(db, ownerId, { purchaseOrderId: partial.id, challanDate: "2093-06-15", lines: [{ poLineId: partial.poLineId, quantity: "5" }] }, NOW),
       ]);
 
       const data = await getDashboardData(db, { now: NOW, limit: BIG });
@@ -141,7 +141,7 @@ suite("dashboard and audit log queries (real Postgres)", () => {
       for (const id of [later, expired, draft, approvedNoPo]) expect(expiring.has(id)).toBe(false);
       // Soonest first.
       const mine = data.expiringSoon.rows.filter((r) => [soon, lastDay, edge].includes(r.id)).map((r) => r.validUntil);
-      expect(mine).toEqual(["2096-06-15", "2096-06-18", "2096-06-22"]);
+      expect(mine).toEqual(["2093-06-15", "2093-06-18", "2093-06-22"]);
 
       expect(data.openQuotations.awaitingDecision).toBeGreaterThanOrEqual(4);
       expect(data.openQuotations.drafts).toBeGreaterThanOrEqual(1);
@@ -155,8 +155,8 @@ suite("dashboard and audit log queries (real Postgres)", () => {
 
     it("a cancelled challan puts its quantities back on the dashboard", async () => {
       const db = await getTestDb();
-      const po = await order(await quote("2096-06-30", { approve: true }), "ZZDB-PO-CANCEL");
-      const c = await createChallan(db, ownerId, { purchaseOrderId: po.id, challanDate: "2096-06-15", lines: [{ poLineId: po.poLineId, quantity: "10" }] }, NOW);
+      const po = await order(await quote("2093-06-30", { approve: true }), "ZZDB-PO-CANCEL");
+      const c = await createChallan(db, ownerId, { purchaseOrderId: po.id, challanDate: "2093-06-15", lines: [{ poLineId: po.poLineId, quantity: "10" }] }, NOW);
       expect((await getDashboardData(db, { now: NOW, limit: BIG })).pendingDeliveries.rows.some((r) => r.id === po.id)).toBe(false);
       await cancelChallan(db, ownerId, { id: c.id, reason: "wrong vehicle" }, NOW);
       const back = (await getDashboardData(db, { now: NOW, limit: BIG })).pendingDeliveries.rows.find((r) => r.id === po.id);
@@ -177,7 +177,7 @@ suite("dashboard and audit log queries (real Postgres)", () => {
   describe("audit log", () => {
     it("returns newest first with the actor's name, filters by type, action and date, and pages", async () => {
       const db = await getTestDb();
-      const id = await quote("2096-06-30", { approve: true });
+      const id = await quote("2093-06-30", { approve: true });
 
       const mine = await findAuditEntries(db, { entityId: id });
       expect(mine.rows.map((r) => `${r.action}:${r.fromStatus ?? ""}>${r.toStatus ?? ""}`)).toEqual(["status_change:sent>approved", "status_change:draft>sent", "create:>draft"]);
