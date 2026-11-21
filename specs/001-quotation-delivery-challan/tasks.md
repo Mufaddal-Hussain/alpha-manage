@@ -251,8 +251,8 @@ Single Next.js project at the repository root (see plan.md "Source Code"): `src/
 
 **Purpose**: Cross-story quality, security, and release.
 
-- [ ] T078 [P] Build the dashboard `src/app/(app)/page.tsx` (open quotations, expiring soon, POs with pending deliveries)
-- [ ] T079 [P] Add an audit log view for owners in `src/app/(app)/settings/audit/page.tsx`
+- [X] T078 [P] Build the dashboard `src/app/(app)/page.tsx` (open quotations, expiring soon, POs with pending deliveries)
+- [X] T079 [P] Add an audit log view for owners in `src/app/(app)/settings/audit/page.tsx`
 - [ ] T080 Write the full-flow Playwright test `tests/e2e/full-flow.spec.ts` (customer → quotation → approve → PO → two challans) and run all suites
 - [ ] T081 [P] Security pass: confirm every server action and route handler calls `requireUser()`/`requireRole()`, file uploads enforce type and size limits (spec edge case), and signed-out requests to `/api/documents/...` and `/api/files/...` return 401 (quickstart scenario 10, SC-007)
 - [X] T082 [P] Superseded by Phase 9 (`s9-phone`, T087–T094): responsive and accessibility pass at phone width

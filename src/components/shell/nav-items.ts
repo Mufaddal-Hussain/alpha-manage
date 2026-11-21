@@ -23,6 +23,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/settings/numbering", label: "Numbering", roles: ["owner"], group: "Settings" },
   { href: "/settings/terms", label: "Terms", roles: ["sales"], group: "Settings" },
   { href: "/settings/users", label: "Users", roles: ["owner"], group: "Settings" },
+  { href: "/settings/audit", label: "Audit log", roles: ["owner"], group: "Settings" },
 ];
 
 export function navFor(role: UserRole): NavItem[] {

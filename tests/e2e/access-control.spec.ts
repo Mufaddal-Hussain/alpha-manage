@@ -41,10 +41,10 @@ test("a signed-out visit to /customers is sent to the sign-in page", async ({ pa
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
 });
 
-test("a sales user has no access to /settings/users or /settings/business", async ({ page }) => {
+test("a sales user has no access to /settings/users, /settings/business or /settings/audit", async ({ page }) => {
   await signIn(page, sales);
 
-  for (const path of ["/settings/users", "/settings/business"]) {
+  for (const path of ["/settings/users", "/settings/business", "/settings/audit"]) {
     await page.goto(path);
     await expect(page).toHaveURL(/\/forbidden$/);
     await expect(page.getByRole("heading", { name: /do not have access/i })).toBeVisible();
@@ -57,6 +57,7 @@ test("a sales user has no access to /settings/users or /settings/business", asyn
   await expect(nav.getByRole("link", { name: "Customers" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Users" })).toHaveCount(0);
   await expect(nav.getByRole("link", { name: "Business profile" })).toHaveCount(0);
+  await expect(nav.getByRole("link", { name: "Audit log" })).toHaveCount(0);
 });
 
 test("the owner can open /settings/users and sees it in the navigation", async ({ page }) => {
@@ -65,4 +66,14 @@ test("the owner can open /settings/users and sees it in the navigation", async (
   await expect(page).toHaveURL(/\/settings\/users$/);
   await expect(page.getByRole("heading", { name: "Users", exact: true })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Users" })).toBeVisible();
+});
+
+test("the owner can open the audit log and sees it in the navigation", async ({ page }) => {
+  await signIn(page, owner);
+  await page.goto("/settings/audit");
+  await expect(page).toHaveURL(/\/settings\/audit$/);
+  await expect(page.getByRole("heading", { name: "Audit log", exact: true })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Audit log" })).toBeVisible();
+  // Creating the two test users above is not audited, but the page must render either way (a table or the empty note).
+  await expect(page.getByRole("table").or(page.getByText(/nothing has been logged|no entries match/i))).toBeVisible();
 });

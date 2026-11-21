@@ -5,7 +5,7 @@ All routes except `/sign-in` require a signed-in staff user. `owner` can do ever
 | Route | Purpose | sales | owner |
 |---|---|---|---|
 | `/sign-in` | Staff sign-in | public | public |
-| `/` | Dashboard: open quotations, quotations expiring soon, POs with pending deliveries | ✔ | ✔ |
+| `/` | Dashboard: open quotations (sent and still valid, plus the number of drafts), quotations expiring soon (valid-until within 7 days), POs with pending deliveries (open or partially delivered, with how many lines still have goods to deliver) | ✔ | ✔ |
 | `/customers`, `/customers/new`, `/customers/[id]` | List/search, create, edit customer, addresses, contacts | ✔ | ✔ |
 | `/catalog/products`, `/catalog/products/new`, `/catalog/products/[id]` | Browse/search products, edit selling price/margin, HSN, GST, discontinue | ✔ view/create, set selling price | ✔ |
 | `/catalog/brands` | Distributors and brands | view | ✔ manage |
@@ -21,6 +21,7 @@ All routes except `/sign-in` require a signed-in staff user. `owner` can do ever
 | `/settings/numbering` | Series formats and starting numbers | — | ✔ |
 | `/settings/terms` | Terms templates | view | ✔ |
 | `/settings/users` | Create/deactivate staff, set role, reset password | — | ✔ |
+| `/settings/audit` | Audit log: every create, status change, override and settings change, newest first, filter by record type, action and date, 50 per page | — | ✔ |
 
 ## Key interactions (acceptance hooks)
 
