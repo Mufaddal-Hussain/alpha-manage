@@ -43,6 +43,16 @@ async function expectTapSize(locator: ReturnType<Page["locator"]>) {
   expect(box.width, "control width").toBeGreaterThanOrEqual(MIN_TARGET - 0.5);
 }
 
+async function searchAndPick(page: Page, label: string, text: string) {
+  const result = page.getByRole("button", { name: new RegExp(text) });
+  await expect(async () => {
+    await page.getByLabel(label).fill("");
+    await page.getByLabel(label).fill(text);
+    await expect(result).toBeVisible({ timeout: 4000 });
+  }).toPass({ timeout: 60_000 });
+  await result.click();
+}
+
 const testId = (page: Page, id: string) => page.locator(`[data-testid="${id}"]:visible`);
 
 test("sign in, menu, customer, quotation, PDF, purchase order and challan on an iPhone", async ({ page }) => {
@@ -97,10 +107,9 @@ test("sign in, menu, customer, quotation, PDF, purchase order and challan on an 
 
   // --- create and issue a quotation -----------------------------------------------------
   await page.goto("/quotations/new");
-  await page.getByLabel("Find customer").fill(customerName);
-  await page.getByRole("button", { name: new RegExp(customerName) }).click();
-  await page.getByLabel("Add product").fill(d.tileName);
-  await page.getByRole("button", { name: new RegExp(d.tileName) }).click();
+  // Typing before the page has hydrated is lost (WebKit is slower to get there), so type again until results show.
+  await searchAndPick(page, "Find customer", customerName);
+  await searchAndPick(page, "Add product", d.tileName);
   await page.locator('[aria-label="Quantity, line 1"]:visible').fill("6");
   await expect(testId(page, "grand-total")).toContainText("₹");
   await expectFits(page);

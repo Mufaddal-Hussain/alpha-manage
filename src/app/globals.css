@@ -65,6 +65,17 @@ body {
   a {
     min-height: 44px;
   }
+  /* WebKit draws a native select at its own height whatever min-height says, so on phones the select is drawn by
+     the page (appearance none) with its own arrow; the picker that opens is still the native one. */
+  select {
+    height: 44px;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 2.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2378716c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+  }
   /* Icon-only buttons (the move and remove buttons on quotation lines) are 44px wide as well as tall. */
   button {
     min-width: 44px;

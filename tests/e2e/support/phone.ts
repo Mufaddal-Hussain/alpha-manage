@@ -252,6 +252,7 @@ export function phoneRoutes(data: PhoneData): { name: string; path: string }[] {
     { name: "settings-numbering", path: "/settings/numbering" },
     { name: "settings-terms", path: "/settings/terms" },
     { name: "settings-users", path: "/settings/users" },
+    { name: "settings-audit", path: "/settings/audit" },
   ];
 }
 
